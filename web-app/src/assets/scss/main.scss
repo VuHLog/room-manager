@@ -1,0 +1,161 @@
+html {
+  font-size: 62.5%;
+}
+
+* {
+  font-family: Arial, Helvetica, sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+ul,
+ol {
+  list-style: none;
+  margin: 0;
+  border: 0;
+}
+
+// height
+.min-h-100vh {
+  min-height: 100vh;
+}
+
+.max-h-100vh {
+  max-height: 100vh;
+}
+
+.h-100vh {
+  height: 100vh;
+}
+
+.h-20px{
+  height: 20px;
+}
+
+.h-32px{
+  height: 32px;
+}
+
+.height-avatar {
+  height: 56px;
+}
+
+.height-avatar-thumbnail {
+  height: 40px;
+}
+
+.height-avatar-chat {
+  height: 28px;
+}
+
+// width
+.width-form-login {
+  width: 600px;
+}
+
+.width-avatar {
+  width: 56px;
+}
+
+.width-avatar-thumbnail {
+  width: 40px;
+}
+
+.w-20px{
+  width: 20px;
+}
+
+.w-32px{
+  width: 32px;
+}
+
+.width-avatar-chat {
+  width: 28px;
+}
+
+.min-w-100vh {
+  min-width: 100vh;
+}
+
+.max-w-100vh {
+  max-width: 100vh;
+}
+
+.max-w-100p {
+  max-width: 100%;
+}
+
+.max-w-40p {
+  max-width: 40%;
+}
+
+// text
+.text-12 {
+  font-size: 0.75rem;
+}
+.text-14 {
+  font-size: 0.875rem;
+}
+.text-16 {
+  font-size: 1rem;
+}
+
+.text-wrap {
+  word-wrap: break-word; /* Chuyển xuống dòng khi từ quá dài */
+  overflow-wrap: break-word; /* Tương tự như word-wrap */
+  white-space: pre-wrap; /* Cho phép xuống dòng */
+  word-break: break-word; /* Đảm bảo từ dài không làm tràn */
+}
+
+//border-radius
+.rounded-ts-lg {
+  border-top-left-radius: 8px;
+}
+
+.rounded-te-lg {
+  border-top-right-radius: 8px;
+}
+
+.rounded-ts-xl {
+  border-top-left-radius: 24px;
+}
+
+.rounded-te-xl {
+  border-top-right-radius: 24px;
+}
+
+//input
+.form-input:focus-visible {
+  border-block-end-width: 1px !important;
+  border-block-end-style: solid !important;
+  border-block-end-color: #aa00ff !important;
+  outline: none;
+}
+
+.outline-none {
+  outline: none;
+}
+
+.user-select-none {
+  user-select: none;
+}
+
+//img
+.object-contain {
+  object-fit: contain;
+}
+
+.object-cover {
+  object-fit: cover;
+}
+
+.object-center {
+  object-position: center;
+}
+
+//z-index
+.z-index-99{
+  z-index: 99;
+}
