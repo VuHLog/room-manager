@@ -1,25 +1,23 @@
 package com.project1.room.dto.response;
 
-import com.project1.room.entity.UserRole;
+import com.project1.room.entity.Users;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserResponse {
+public class BranchesResponse {
     private String id;
 
-    private String username;
+    private String name;
 
-    private String password;
+    private String address;
 
-    private String avatarUrl;
+    private String phoneNumber;
 
-    private Set<UserRole> user_roles;
+    private Users manager;
 }

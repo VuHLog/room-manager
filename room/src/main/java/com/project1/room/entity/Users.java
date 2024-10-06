@@ -29,5 +29,9 @@ public class Users {
 
     @OneToMany(mappedBy = "user",cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JsonIgnore
-    private Set<User_Role> user_roles;
+    private Set<UserRole> user_roles;
+
+    @OneToMany(mappedBy = "manager")
+    @JsonIgnore
+    private Set<Branches> branches;
 }

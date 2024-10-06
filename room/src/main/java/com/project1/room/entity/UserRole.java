@@ -14,7 +14,7 @@ import lombok.*;
                 @UniqueConstraint(columnNames = {"user_id", "role_id"})
         }
 )
-public class User_Role {
+public class UserRole {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -27,7 +27,7 @@ public class User_Role {
     @JoinColumn(name = "role_id")
     private Role role;
 
-    public User_Role(Users user, Role role) {
+    public UserRole(Users user, Role role) {
         this.user = user;
         this.role = role;
     }

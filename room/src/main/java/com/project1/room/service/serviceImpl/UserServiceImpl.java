@@ -7,7 +7,7 @@ import com.project1.room.dto.request.UserCreationRequest;
 import com.project1.room.dto.request.UserUpdateRequest;
 import com.project1.room.dto.response.UserResponse;
 import com.project1.room.entity.Role;
-import com.project1.room.entity.User_Role;
+import com.project1.room.entity.UserRole;
 import com.project1.room.entity.Users;
 import com.project1.room.exception.AppException;
 import com.project1.room.exception.ErrorCode;
@@ -63,14 +63,14 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         //xu ly roles request
-        Set<User_Role> user_roles = new HashSet<>();
+        Set<UserRole> user_roles = new HashSet<>();
         if(request.getRoles() == null) {
-            User_Role user_role = new User_Role();
+            UserRole user_role = new UserRole();
             user_role.setRole(roleRepository.findByRoleName("User"));
             user_role.setUser(user);
             user_roles.add(user_role);
         }else {
-            request.getRoles().stream().forEach(s -> user_roles.add(new User_Role(user,s)));
+            request.getRoles().stream().forEach(s -> user_roles.add(new UserRole(user,s)));
         }
         user.setUser_roles(user_roles);
 
@@ -106,10 +106,10 @@ public class UserServiceImpl implements UserService {
         // xoá user id trong user_role
         userRoleRepository.deleteByUser(user);
 
-        Set<User_Role> user_roles = new HashSet<>();
+        Set<UserRole> user_roles = new HashSet<>();
         List<Role> rolesRequest = request.getRoles().stream().toList();
         for(int i=0; i<rolesRequest.size();i++){
-            user_roles.add(new User_Role(user,rolesRequest.get(i)));
+            user_roles.add(new UserRole(user,rolesRequest.get(i)));
         }
 
         user.setUser_roles(user_roles);

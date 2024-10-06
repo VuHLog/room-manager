@@ -8,21 +8,20 @@ import java.util.Set;
 
 @Getter
 @Setter
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "role")
-public class Role {
+@Entity
+@Table
+public class Equipments {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column
     private String id;
 
     @Column
-    private String roleName;
+    private String name;
 
-    @OneToMany(mappedBy="role")
+    @OneToMany(mappedBy = "equipment")
     @JsonIgnore
-    private Set<UserRole> user_roles;
+    private Set<RoomEquipment> roomEquipments;
 }

@@ -1,5 +1,6 @@
 package com.project1.room.entity;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,21 +9,28 @@ import java.util.Set;
 
 @Getter
 @Setter
-@Entity
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table
 @Builder
-@Table(name = "role")
-public class Role {
+public class Store {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column
     private String id;
 
     @Column
-    private String roleName;
+    private int quantity;
 
-    @OneToMany(mappedBy="role")
+    @Column
+    private String status;
+
+    @ManyToOne
+    @JoinColumn(name = "branch_id")
+    private Branches branch;
+
+    @OneToMany
     @JsonIgnore
-    private Set<UserRole> user_roles;
+    private Set<RoomEquipment> roomEquipments;
+
 }
