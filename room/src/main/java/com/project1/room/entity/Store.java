@@ -29,8 +29,7 @@ public class Store {
     @JoinColumn(name = "branch_id")
     private Branches branch;
 
-    @OneToMany
-    @JsonIgnore
-    private Set<RoomEquipment> roomEquipments;
-
+    @ManyToOne
+    @JoinColumn(name = "equipment_id")
+    private Equipments equipment;
 }

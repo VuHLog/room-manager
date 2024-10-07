@@ -24,4 +24,8 @@ public class Equipments {
     @OneToMany(mappedBy = "equipment")
     @JsonIgnore
     private Set<RoomEquipment> roomEquipments;
+
+    @OneToMany(mappedBy = "equipment")
+    @JsonIgnore
+    private Set<Store> stores;
 }

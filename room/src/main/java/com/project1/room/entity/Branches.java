@@ -41,5 +41,6 @@ public class Branches {
     @OneToMany(mappedBy = "branch",
             cascade = {CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE}
     )
+    @JsonIgnore
     private Set<Store> stores;
 }

@@ -45,7 +45,7 @@ public class ContractsServiceImpl implements ContractsService {
         Contracts contract = contractsMapper.toContract(request);
 
         // add room to contract
-        Rooms room = roomsRepository.findById(request.getRoomId()).orElseThrow(null);
+        Rooms room = roomsRepository.findById(request.getRoomId()).orElse(null);
         contract.setRoom(room);
 
         //set contract to tenant_contract
@@ -60,7 +60,7 @@ public class ContractsServiceImpl implements ContractsService {
         contractsMapper.updateContract(contract, request);
 
         if(!contract.getRoom().getId().equals(request.getRoomId())) {
-            Rooms room = roomsRepository.findById(request.getRoomId()).orElseThrow(null);
+            Rooms room = roomsRepository.findById(request.getRoomId()).orElse(null);
             contract.setRoom(room);
         }
 
