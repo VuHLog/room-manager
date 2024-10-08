@@ -30,6 +30,11 @@ public class ServicesServiceImpl implements ServicesService {
     }
 
     @Override
+    public Page<ServicesResponse> getServicesByRoomId(String roomId, Pageable pageable) {
+        return servicesRepository.findByServiceRooms_Room_IdOrderByServiceRooms_YearDescServiceRooms_MonthDesc(roomId, pageable).map(servicesMapper::toServicesResponse);
+    }
+
+    @Override
     public ServicesResponse getById(String ServiceId) {
         Services Service = servicesRepository.findById(ServiceId).orElseThrow(null);
         return servicesMapper.toServicesResponse(Service);

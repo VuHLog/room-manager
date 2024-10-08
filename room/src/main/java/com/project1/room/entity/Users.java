@@ -27,6 +27,9 @@ public class Users {
 
     private String avatarUrl;
 
+    @Column
+    private String phoneNumber;
+
     @OneToMany(mappedBy = "user",cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JsonIgnore
     private Set<UserRole> user_roles;

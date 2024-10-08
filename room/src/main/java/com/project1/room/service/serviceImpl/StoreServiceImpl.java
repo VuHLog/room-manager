@@ -40,6 +40,11 @@ public class StoreServiceImpl implements StoreService {
     }
 
     @Override
+    public Page<StoreResponse> getStoresByBranchId(String branchId, Pageable pageable) {
+        return storeRepository.findByBranch_Id(branchId, pageable).map(storeMapper::toStoreResponse);
+    }
+
+    @Override
     public StoreResponse getById(String id) {
         Store store = storeRepository.findById(id).orElse(null);
         return storeMapper.toStoreResponse(store);

@@ -34,6 +34,11 @@ public class EquipmentsServiceImpl implements EquipmentsService {
     }
 
     @Override
+    public Page<EquipmentsResponse> getEquipmentsByRoomId(String roomId, Pageable pageable) {
+        return equipmentsRepository.findByRoomEquipments_Room_Id(roomId, pageable).map(equipmentsMapper::toEquipmentsResponse);
+    }
+
+    @Override
     public EquipmentsResponse getById(String EquipmentId) {
         Equipments Equipment = equipmentsRepository.findById(EquipmentId).orElseThrow(null);
         return equipmentsMapper.toEquipmentsResponse(Equipment);

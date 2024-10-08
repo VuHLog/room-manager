@@ -25,9 +25,6 @@ public class Branches {
     @Column
     private String address;
 
-    @Column
-    private String phoneNumber;
-
     @ManyToOne
     @JoinColumn(name = "manager_id")
     private Users manager;

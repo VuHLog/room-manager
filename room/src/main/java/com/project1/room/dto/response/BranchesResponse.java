@@ -17,7 +17,5 @@ public class BranchesResponse {
 
     private String address;
 
-    private String phoneNumber;
-
     private Users manager;
 }

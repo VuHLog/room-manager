@@ -19,5 +19,7 @@ public class UserCreationRequest {
 
     private String avatarUrl;
 
+    private String phoneNumber;
+
     private Set<Role> roles;
 }

@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ServicesRepository extends JpaRepository<Services, String> {
     Page<Services> findByNameContainsIgnoreCase(String text, Pageable pageable);
+
+    Page<Services> findByServiceRooms_Room_IdOrderByServiceRooms_YearDescServiceRooms_MonthDesc(String roomId, Pageable pageable);
 }

@@ -10,6 +10,8 @@ public interface RoomsService {
 
     Page<RoomsResponse> getRoomsContain(String text, Pageable pageable);
 
+    Page<RoomsResponse> getRoomsByBranchId(String branchId, Pageable pageable);
+
     RoomsResponse getById(String id);
 
     RoomsResponse addRoom(RoomsRequest request);

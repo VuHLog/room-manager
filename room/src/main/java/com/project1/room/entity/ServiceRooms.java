@@ -21,11 +21,11 @@ public class ServiceRooms {
     @Column
     private int price;
 
-//    @Column
-//    private int year;
-//
-//    @Column
-//    private int month;
+    @Column
+    private int year;
+
+    @Column
+    private int month;
 
     @ManyToOne
     @JoinColumn(name = "room_id")

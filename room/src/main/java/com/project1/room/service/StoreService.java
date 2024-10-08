@@ -10,6 +10,8 @@ public interface StoreService {
 
     Page<StoreResponse> getStoresContain(String text, Pageable pageable);
 
+    Page<StoreResponse> getStoresByBranchId(String branchId, Pageable pageable);
+
     StoreResponse getById(String id);
 
     StoreResponse addStore(StoreRequest request);

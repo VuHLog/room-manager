@@ -10,6 +10,8 @@ public interface EquipmentsService {
 
     Page<EquipmentsResponse> getEquipmentsContain(String text, Pageable pageable);
 
+    Page<EquipmentsResponse> getEquipmentsByRoomId(String roomId, Pageable pageable);
+
     EquipmentsResponse getById(String id);
 
     EquipmentsResponse addEquipment(EquipmentsRequest request);

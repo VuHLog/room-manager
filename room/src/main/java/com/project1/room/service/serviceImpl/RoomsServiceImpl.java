@@ -39,6 +39,11 @@ public class RoomsServiceImpl implements RoomsService {
     }
 
     @Override
+    public Page<RoomsResponse> getRoomsByBranchId(String branchId, Pageable pageable) {
+        return roomsRepository.findByBranch_Id(branchId, pageable).map(roomsMapper::toRoomsResponse);
+    }
+
+    @Override
     public RoomsResponse getById(String roomId) {
         Rooms room = roomsRepository.findById(roomId).orElse(null);
         return roomsMapper.toRoomsResponse(room);

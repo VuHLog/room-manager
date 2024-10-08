@@ -10,6 +10,8 @@ public interface ServicesService {
 
     Page<ServicesResponse> getServicesContain(String text, Pageable pageable);
 
+    Page<ServicesResponse> getServicesByRoomId(String roomId, Pageable pageable);
+
     ServicesResponse getById(String id);
 
     ServicesResponse addService(ServicesRequest request);

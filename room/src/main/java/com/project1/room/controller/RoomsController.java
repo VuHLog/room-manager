@@ -48,6 +48,26 @@ public class RoomsController {
                 .build();
     }
 
+    @GetMapping("/branch/{branchId}")
+    public Page<RoomsResponse> getRoomsByBranchId(
+            @RequestParam(name = "field", required = false, defaultValue = "id") String field,
+            @RequestParam(name = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
+            @RequestParam(name = "pageSize", required = false, defaultValue = "5") Integer pageSize,
+            @RequestParam(name = "sort", required = false, defaultValue = "ASC") String sort,
+            @PathVariable String branchId
+    ){
+        Sort sortable = null;
+        if(sort.equalsIgnoreCase("ASC")){
+            sortable = Sort.by(field).ascending();
+        }
+        if(sort.equalsIgnoreCase("DESC")){
+            sortable = Sort.by(field).descending();
+        }
+
+        Pageable pageable = PageRequest.of(pageNumber,pageSize,sortable);
+        return roomsService.getRoomsByBranchId(branchId, pageable);
+    }
+
     @PostMapping("")
     public ApiResponse<RoomsResponse> addRoom(@RequestBody RoomsRequest request) {
         return ApiResponse.<RoomsResponse>builder()

@@ -20,7 +20,5 @@ public class BranchesRequest {
 
     private String address;
 
-    private String phoneNumber;
-
     private String managerId;
 }
