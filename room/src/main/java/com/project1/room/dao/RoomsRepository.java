@@ -12,4 +12,6 @@ public interface RoomsRepository extends JpaRepository<Rooms, String> {
     Page<Rooms> findByBranch_NameContainsIgnoreCase(String text, Pageable pageable);
 
     Page<Rooms> findByBranch_Id(String branchId, Pageable pageable);
+
+    boolean existsByBranch_IdAndRoomNumber(String branchId, String roomNumber);
 }

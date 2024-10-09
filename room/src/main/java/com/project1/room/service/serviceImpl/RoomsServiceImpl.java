@@ -8,6 +8,8 @@ import com.project1.room.entity.Branches;
 import com.project1.room.entity.Equipments;
 import com.project1.room.entity.Rooms;
 import com.project1.room.entity.Services;
+import com.project1.room.exception.AppException;
+import com.project1.room.exception.ErrorCode;
 import com.project1.room.mapper.RoomsMapper;
 import com.project1.room.service.RoomsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,10 +53,12 @@ public class RoomsServiceImpl implements RoomsService {
 
     @Override
     public RoomsResponse addRoom(RoomsRequest request) {
+        // check branchId and room number existed
+        if(roomsRepository.existsByBranch_IdAndRoomNumber(request.getBranchId(), request.getRoomNumber()))
+            throw new AppException(ErrorCode.BRANCH_ROOM_NUMBER_EXISTED);
+
         Rooms room = roomsMapper.toRooms(request);
-
         room.setStatus(RoomStatus.EMPTY.getStatus());
-
 
         // add branch to room
         Branches branch = branchesRepository.findById(request.getBranchId()).orElseThrow(null);
@@ -72,6 +76,14 @@ public class RoomsServiceImpl implements RoomsService {
     @Override
     public RoomsResponse updateRoom(String roomId, RoomsRequest request) {
         Rooms room = roomsRepository.findById(roomId).orElseThrow(null);
+
+        if(!room.getRoomNumber().equals(request.getRoomNumber())
+                && !room.getBranch().getId().equals(request.getBranchId())
+                && roomsRepository.existsByBranch_IdAndRoomNumber(request.getBranchId(), request.getRoomNumber())
+        ){
+                throw new AppException(ErrorCode.BRANCH_ROOM_NUMBER_EXISTED);
+        }
+
         roomsMapper.updateRoom(room, request);
 
         if(!room.getBranch().getId().equals(request.getBranchId())) {
