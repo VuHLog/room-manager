@@ -30,9 +30,9 @@ public class Users {
     @Column
     private String phoneNumber;
 
-    @OneToMany(mappedBy = "user",cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @OneToMany(mappedBy = "user",cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, orphanRemoval = true)
     @JsonIgnore
-    private Set<UserRole> user_roles;
+    private Set<UserRole> userRoles;
 
     @OneToMany(mappedBy = "manager")
     @JsonIgnore

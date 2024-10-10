@@ -191,8 +191,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private String buildScope(Users user) {
         StringJoiner stringJoiner = new StringJoiner(" ");
 
-        if (!CollectionUtils.isEmpty(user.getUser_roles()))
-            user.getUser_roles().forEach(role -> {
+        if (!CollectionUtils.isEmpty(user.getUserRoles()))
+            user.getUserRoles().forEach(role -> {
                 stringJoiner.add("ROLE_" + role.getRole().getRoleName());
             });
 

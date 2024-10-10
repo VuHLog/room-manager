@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -19,7 +20,9 @@ public class UserResponse {
 
     private String password;
 
+    private String phoneNumber;
+
     private String avatarUrl;
 
-    private Set<UserRole> user_roles;
+    private List<UserRole> userRoles;
 }

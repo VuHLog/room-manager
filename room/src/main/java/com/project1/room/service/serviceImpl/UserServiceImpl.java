@@ -54,30 +54,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse addUser(UserCreationRequest request) {
-        if(usersRepository.existsByUsername(request.getUsername()))
-            throw new AppException(ErrorCode.USER_EXISTED);
-
-
-        Users user = userMapper.toUser(request);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        //xu ly roles request
-        Set<UserRole> user_roles = new HashSet<>();
-        if(request.getRoles() == null) {
-            UserRole user_role = new UserRole();
-            user_role.setRole(roleRepository.findByRoleName("User"));
-            user_role.setUser(user);
-            user_roles.add(user_role);
-        }else {
-            request.getRoles().stream().forEach(s -> user_roles.add(new UserRole(user,s)));
-        }
-        user.setUser_roles(user_roles);
-
-        return userMapper.toUserResponse(usersRepository.save(user));
-    }
-
-    @Override
     public Page<UserResponse> getUsers(Pageable pageable) {
         return usersRepository.findAll(pageable).map(userMapper::toUserResponse);
     }
@@ -97,22 +73,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserResponse addUser(UserCreationRequest request) {
+        if(usersRepository.existsByUsername(request.getUsername()))
+            throw new AppException(ErrorCode.USER_EXISTED);
+
+        Users user = userMapper.toUser(request);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        //xu ly user roles request
+        user.getUserRoles().forEach(userRole -> userRole.setUser(user));
+        return userMapper.toUserResponse(usersRepository.save(user));
+    }
+
+    @Override
     @Transactional
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
-        Users user = usersRepository.findById(userId).get();
+        Users user = usersRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         userMapper.updateUser(user, request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        // xoá user id trong user_role
-        userRoleRepository.deleteByUser(user);
-
-        Set<UserRole> user_roles = new HashSet<>();
-        List<Role> rolesRequest = request.getRoles().stream().toList();
-        for(int i=0; i<rolesRequest.size();i++){
-            user_roles.add(new UserRole(user,rolesRequest.get(i)));
-        }
-
-        user.setUser_roles(user_roles);
+        //xu ly user roles request
+        user.getUserRoles().forEach(userRole -> userRole.setUser(user));
 
         return userMapper.toUserResponse(usersRepository.saveAndFlush(user));
     }
