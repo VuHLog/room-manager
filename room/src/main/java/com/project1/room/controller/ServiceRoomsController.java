@@ -62,7 +62,7 @@ public class ServiceRoomsController {
                 .build();
     }
 
-    @DeleteMapping("/{serviceRomId}")
+    @DeleteMapping("/{serviceRoomId}")
     public ApiResponse<String> deleteServiceRoom(@PathVariable String serviceRoomId) {
         serviceRoomsService.deleteServiceRoomsById(serviceRoomId);
         return ApiResponse.<String>builder()

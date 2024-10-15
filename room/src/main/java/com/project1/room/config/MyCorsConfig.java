@@ -16,7 +16,7 @@ public class MyCorsConfig {
 
         // Cho phép các domain cụ thể
         config.addAllowedOrigin("http://localhost:3001");
-        config.addAllowedOrigin("http://localhost:5174");
+        config.addAllowedOrigin("http://localhost:3000");
 
         // Hoặc cho phép tất cả các domain (không khuyến khích trong môi trường sản xuất)
         // config.addAllowedOrigin("*");

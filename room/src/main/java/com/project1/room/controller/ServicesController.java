@@ -76,14 +76,14 @@ public class ServicesController {
                 .build();
     }
 
-    @PutMapping("/{ServiceId}")
+    @PutMapping("/{serviceId}")
     public ApiResponse<ServicesResponse> updateService(@PathVariable String serviceId,@RequestBody ServicesRequest request) {
         return ApiResponse.<ServicesResponse>builder()
                 .result(servicesService.updateService(serviceId, request))
                 .build();
     }
 
-    @DeleteMapping("/{ServiceId}")
+    @DeleteMapping("/{serviceId}")
     public ApiResponse<String> deleteService(@PathVariable String serviceId) {
         servicesService.deleteServiceById(serviceId);
         return ApiResponse.<String>builder()
