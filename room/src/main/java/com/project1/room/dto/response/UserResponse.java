@@ -25,4 +25,4 @@ public class UserResponse {
     private String avatarUrl;
 
     private List<UserRole> userRoles;
-}
+} 

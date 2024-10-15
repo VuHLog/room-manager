@@ -77,8 +77,7 @@ public class RoomsServiceImpl implements RoomsService {
     public RoomsResponse updateRoom(String roomId, RoomsRequest request) {
         Rooms room = roomsRepository.findById(roomId).orElseThrow(null);
 
-        if(!room.getRoomNumber().equals(request.getRoomNumber())
-                && !room.getBranch().getId().equals(request.getBranchId())
+        if((!room.getRoomNumber().equals(request.getRoomNumber()) || !room.getBranch().getId().equals(request.getBranchId()))
                 && roomsRepository.existsByBranch_IdAndRoomNumber(request.getBranchId(), request.getRoomNumber())
         ){
                 throw new AppException(ErrorCode.BRANCH_ROOM_NUMBER_EXISTED);
