@@ -2,6 +2,7 @@ package com.project1.room.service.serviceImpl;
 
 import com.project1.room.constants.RoomStatus;
 import com.project1.room.dao.*;
+import com.project1.room.dao.specifications.RoomsSpecification;
 import com.project1.room.dto.request.RoomsRequest;
 import com.project1.room.dto.response.RoomsResponse;
 import com.project1.room.entity.Branches;
@@ -14,7 +15,10 @@ import com.project1.room.mapper.RoomsMapper;
 import com.project1.room.service.RoomsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,13 +35,33 @@ public class RoomsServiceImpl implements RoomsService {
     private RoomsMapper roomsMapper;
 
     @Override
-    public Page<RoomsResponse> getRooms(Pageable pageable) {
-        return roomsRepository.findAll(pageable).map(roomsMapper::toRoomsResponse);
-    }
+    public Page<RoomsResponse> getRooms(String field, Integer pageNumber, Integer pageSize, String sort, String searchText, String branchId, String managerId, String status, Integer capacity) {
+        Specification<Rooms> specs = Specification.where(null);
+        if (!searchText.trim().isEmpty()) {
+            specs = specs.and(RoomsSpecification.equalRoomNumber(searchText));
+        }
 
-    @Override
-    public Page<RoomsResponse> getRoomsContain(String text, Pageable pageable) {
-        return roomsRepository.findByBranch_NameContainsIgnoreCase(text, pageable).map(roomsMapper::toRoomsResponse);
+        if (!branchId.trim().isEmpty()) {
+            specs = specs.and(RoomsSpecification.equalBranchId(branchId));
+        }
+
+        if (!managerId.trim().isEmpty()) {
+            specs = specs.and(RoomsSpecification.equalManagerId(managerId));
+        }
+
+        if (!status.trim().isEmpty()) {
+            specs = specs.and(RoomsSpecification.equalStatus(status));
+        }
+        if (capacity != null) {
+            specs = specs.and(RoomsSpecification.equalCapacity(capacity));
+        }
+
+
+        Sort sortable = sort.equalsIgnoreCase("ASC") ? Sort.by(field).ascending() : Sort.by(field).descending();
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sortable);
+
+        return roomsRepository.findAll(specs, pageable).map(roomsMapper::toRoomsResponse);
     }
 
     @Override

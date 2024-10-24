@@ -23,22 +23,13 @@ public class RoomsController {
             @RequestParam(name = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
             @RequestParam(name = "pageSize", required = false, defaultValue = "5") Integer pageSize,
             @RequestParam(name = "sort", required = false, defaultValue = "ASC") String sort,
-            @RequestParam(name = "search", required = false, defaultValue = "") String search
+            @RequestParam(name = "search", required = false, defaultValue = "") String searchText,
+            @RequestParam(name = "branchId", required = false, defaultValue = "") String branchId,
+            @RequestParam(name = "managerId", required = false, defaultValue = "") String managerId,
+            @RequestParam(name = "status", required = false, defaultValue = "") String status,
+            @RequestParam(name = "capacity", required = false, defaultValue = "") Integer capacity
     ){
-        Sort sortable = null;
-        if(sort.toUpperCase().equals("ASC")){
-            sortable = Sort.by(field).ascending();
-        }
-        if(sort.toUpperCase().equals("DESC")){
-            sortable = Sort.by(field).descending();
-        }
-
-        Pageable pageable = PageRequest.of(pageNumber,pageSize,sortable);
-        Page<RoomsResponse> rooms = null;
-        if(!search.trim().equals("")){
-            rooms = roomsService.getRoomsContain(search,pageable);
-        }else rooms = roomsService.getRooms(pageable);
-        return rooms;
+        return roomsService.getRooms(field, pageNumber, pageSize, sort, searchText, branchId, managerId, status, capacity);
     }
 
     @GetMapping("/{roomId}")
