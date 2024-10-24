@@ -3,11 +3,10 @@ package com.project1.room.service.serviceImpl;
 import com.project1.room.dao.RoleRepository;
 import com.project1.room.dao.UserRoleRepository;
 import com.project1.room.dao.UsersRepository;
+import com.project1.room.dao.specifications.UsersSpecification;
 import com.project1.room.dto.request.UserCreationRequest;
 import com.project1.room.dto.request.UserUpdateRequest;
 import com.project1.room.dto.response.UserResponse;
-import com.project1.room.entity.Role;
-import com.project1.room.entity.UserRole;
 import com.project1.room.entity.Users;
 import com.project1.room.exception.AppException;
 import com.project1.room.exception.ErrorCode;
@@ -17,13 +16,11 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -59,8 +56,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserResponse> getUsersContains(String s, Pageable pageable) {
-        return usersRepository.findByUsernameContainsIgnoreCase(s, pageable).map(userMapper::toUserResponse);
+    public Page<UserResponse> getUsersContains(String text, Pageable pageable) {
+        Specification<Users> specs = Specification.where(null);
+        if(text != null){
+            specs = specs.and(UsersSpecification.getUsersSpecificationContainsIgnoreCase(text));
+        }
+        return usersRepository.findAll(specs, pageable).map(userMapper::toUserResponse);
     }
 
     public UserResponse getMyInfo(){
@@ -103,5 +104,11 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(String userId) {
         userRoleRepository.deleteByUserId(userId);
         usersRepository.deleteById(userId);
+    }
+
+    public boolean hasId(String id){
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user = usersRepository.findByUsername(username).orElse(null);
+        return user != null && user.getId().equals(id);
     }
 }

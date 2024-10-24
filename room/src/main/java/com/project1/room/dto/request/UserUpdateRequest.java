@@ -19,6 +19,8 @@ public class UserUpdateRequest {
 
     private String avatarUrl;
 
+    private String name;
+
     private String phoneNumber;
 
     private List<UserRole> userRoles;

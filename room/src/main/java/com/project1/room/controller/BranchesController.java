@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -49,6 +50,7 @@ public class BranchesController {
     }
 
     @PostMapping("")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<BranchesResponse> addBranch(@RequestBody BranchesRequest request) {
         return ApiResponse.<BranchesResponse>builder()
                 .result(branchesService.addBranch(request))
@@ -56,6 +58,7 @@ public class BranchesController {
     }
 
     @PutMapping("/{branchId}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MANAGER') and @branchesServiceImpl.hasManager(#branchId))")
     public ApiResponse<BranchesResponse> updateBranch(@PathVariable String branchId,@RequestBody BranchesRequest request) {
         return ApiResponse.<BranchesResponse>builder()
                 .result(branchesService.updateBranch(branchId, request))
@@ -63,6 +66,7 @@ public class BranchesController {
     }
 
     @DeleteMapping("/{branchId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<String> deleteBranch(@PathVariable String branchId) {
         branchesService.deleteBranchById(branchId);
         return ApiResponse.<String>builder()

@@ -11,7 +11,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/users")
@@ -30,17 +33,12 @@ public class UserController {
 
     @GetMapping("")
     public Page<UserResponse> getUsers(
-            @RequestParam(name = "field", required = false, defaultValue = "id") String field,
+            @RequestParam(name = "field", required = false, defaultValue = "name") String field,
             @RequestParam(name = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
             @RequestParam(name = "pageSize", required = false, defaultValue = "5") Integer pageSize,
             @RequestParam(name = "sort", required = false, defaultValue = "ASC") String sort,
             @RequestParam(name = "search", required = false, defaultValue = "") String search
     ){
-
-//        var authentication = SecurityContextHolder.getContext().getAuthentication();
-//
-//        log.info("username: {}",authentication.getName());
-//        authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
 
         Sort sortable = null;
         if(sort.toUpperCase().equals("ASC")){
@@ -80,13 +78,15 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public ApiResponse<UserResponse> updateUser(@PathVariable String userId,@RequestBody UserUpdateRequest request){
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MANAGER') and @userServiceImpl.hasId(#userId))")
+    public ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request){
         return ApiResponse.<UserResponse>builder()
                 .result(userService.updateUser(userId,request))
                 .build();
     }
 
     @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MANAGER') and @userServiceImpl.hasId(#userId))")
     public ApiResponse<String> deleteUser(@PathVariable String userId){
         userService.deleteUser(userId);
         return ApiResponse.<String>builder()

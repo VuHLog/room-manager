@@ -10,11 +10,10 @@ import com.project1.room.exception.AppException;
 import com.project1.room.exception.ErrorCode;
 import com.project1.room.mapper.BranchesMapper;
 import com.project1.room.service.BranchesService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.web.mappings.MappingsEndpoint;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -68,5 +67,15 @@ public class BranchesServiceImpl implements BranchesService {
     @Override
     public void deleteBranchById(String branchId) {
         branchesRepository.deleteById(branchId);
+    }
+
+    public boolean hasManager(String branchId) {
+        //get current user
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user = usersRepository.findByUsername(username).orElse(null);
+
+        //get branch
+        Branches branch = branchesRepository.findById(branchId).orElse(null);
+        return user != null && branch != null && user.getId().equals(branch.getManager().getId());
     }
 }
