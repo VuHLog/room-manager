@@ -24,6 +24,7 @@ public class BranchesController {
             @RequestParam(name = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
             @RequestParam(name = "pageSize", required = false, defaultValue = "5") Integer pageSize,
             @RequestParam(name = "sort", required = false, defaultValue = "ASC") String sort,
+            @RequestParam(name = "managerId", required = false, defaultValue = "") String managerId,
             @RequestParam(name = "search", required = false, defaultValue = "") String search
     ){
         Sort sortable = null;
@@ -36,8 +37,8 @@ public class BranchesController {
 
         Pageable pageable = PageRequest.of(pageNumber,pageSize,sortable);
         Page<BranchesResponse> branches = null;
-        if(!search.trim().equals("")){
-            branches = branchesService.getBranchesContain(search,pageable);
+        if(!search.trim().isEmpty() || !managerId.trim().isEmpty()){
+            branches = branchesService.getBranchesContain(search, managerId,pageable);
         }else branches = branchesService.getBranches(pageable);
         return branches;
     }

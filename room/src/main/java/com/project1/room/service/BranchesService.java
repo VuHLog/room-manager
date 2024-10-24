@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 public interface BranchesService {
     Page<BranchesResponse> getBranches(Pageable pageable);
 
-    Page<BranchesResponse> getBranchesContain(String text, Pageable pageable);
+    Page<BranchesResponse> getBranchesContain(String text, String managerId, Pageable pageable);
 
     BranchesResponse getById(String id);
 

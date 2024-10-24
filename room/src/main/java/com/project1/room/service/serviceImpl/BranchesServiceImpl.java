@@ -2,6 +2,7 @@ package com.project1.room.service.serviceImpl;
 
 import com.project1.room.dao.BranchesRepository;
 import com.project1.room.dao.UsersRepository;
+import com.project1.room.dao.specifications.BranchesSpecification;
 import com.project1.room.dto.request.BranchesRequest;
 import com.project1.room.dto.response.BranchesResponse;
 import com.project1.room.entity.Branches;
@@ -13,6 +14,7 @@ import com.project1.room.service.BranchesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +35,17 @@ public class BranchesServiceImpl implements BranchesService {
     }
 
     @Override
-    public Page<BranchesResponse> getBranchesContain(String text, Pageable pageable) {
-        return branchesRepository.findByNameContainsIgnoreCase(text, pageable).map(branchesMapper::toBranchResponse);
+    public Page<BranchesResponse> getBranchesContain(String text, String managerId, Pageable pageable) {
+        Specification<Branches> specs = Specification.where(null);
+        if(text != null){
+            specs = specs.and(BranchesSpecification.equalNameOrAddress(text));
+        }
+
+        if(managerId != null){
+            specs = specs.and(BranchesSpecification.equalManagerId(managerId));
+        }
+
+        return branchesRepository.findAll(specs, pageable).map(branchesMapper::toBranchResponse);
     }
 
     @Override
