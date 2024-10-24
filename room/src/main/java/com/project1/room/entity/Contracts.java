@@ -42,12 +42,7 @@ public class Contracts {
     @JsonIgnore
     private Set<TenantContract> tenantContracts;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "room_id")
     private Rooms room;
-
-    @PrePersist
-    protected void onCreate() {
-        startDate = Timestamp.valueOf(LocalDateTime.now());
-    }
 }

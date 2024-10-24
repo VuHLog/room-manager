@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Data
@@ -13,6 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class ContractsRequest {
+    private String startDate;
+
     private String endDate;
 
     private int price;

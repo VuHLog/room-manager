@@ -1,5 +1,6 @@
 package com.project1.room.service.serviceImpl;
 
+import com.project1.room.constants.RoomStatus;
 import com.project1.room.dao.ContractsRepository;
 import com.project1.room.dao.RoomsRepository;
 import com.project1.room.dto.request.ContractsRequest;
@@ -46,6 +47,9 @@ public class ContractsServiceImpl implements ContractsService {
 
         // add room to contract
         Rooms room = roomsRepository.findById(request.getRoomId()).orElse(null);
+        if(room != null) {
+            room.setStatus(RoomStatus.USED.getStatus());
+        }
         contract.setRoom(room);
 
         //set contract to tenant_contract
@@ -70,14 +74,17 @@ public class ContractsServiceImpl implements ContractsService {
         return contractsMapper.toContractsResponse(contractsRepository.save(contract));
     }
 
-    public void updateContractStatus(String contractId, String status) {
-        Contracts contract = contractsRepository.findById(contractId).orElseThrow(null);
-        contract.setStatus(status);
-        contractsMapper.toContractsResponse(contractsRepository.save(contract));
-    }
-
     @Override
-    public void deleteContractById(String roomId) {
-        updateContractStatus(roomId, "disabled");
+    public void deleteContractById(String contractId) {
+        Contracts contract = contractsRepository.findById(contractId).orElseThrow(null);
+        contract.setStatus("disabled");
+        // add room to contract
+        Rooms room = roomsRepository.findById(contract.getRoom().getId()).orElse(null);
+        if(room != null) {
+            room.setStatus(RoomStatus.EMPTY.getStatus());
+        }
+        contract.setRoom(room);
+
+        contractsMapper.toContractsResponse(contractsRepository.save(contract));
     }
 }

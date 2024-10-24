@@ -1,10 +1,8 @@
 package com.project1.room.mapper;
 
 import com.project1.room.dto.request.ContractsRequest;
-import com.project1.room.dto.request.RoomsRequest;
 import com.project1.room.dto.response.ContractsResponse;
 import com.project1.room.entity.Contracts;
-import com.project1.room.entity.Rooms;
 import com.project1.room.util.TimestampUtil;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,6 +15,7 @@ import java.sql.Timestamp;
 public interface ContractsMapper {
     @Named("stringToTimestamp")
     @Mapping(target = "endDate", expression = "java(stringToTimestamp(request.getEndDate()))")
+    @Mapping(target = "startDate", expression = "java(stringToTimestamp(request.getStartDate()))")
     @Mapping(target = "room", ignore = true)
     Contracts toContract(ContractsRequest request);
 
@@ -26,6 +25,7 @@ public interface ContractsMapper {
     ContractsResponse toContractsResponse(Contracts contracts);
 
     @Mapping(target = "endDate", expression = "java(stringToTimestamp(request.getEndDate()))")
+    @Mapping(target = "startDate", expression = "java(stringToTimestamp(request.getStartDate()))")
     @Mapping(target = "room", ignore = true)
     void updateContract(@MappingTarget Contracts contract, ContractsRequest request);
 
