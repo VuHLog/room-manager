@@ -37,7 +37,7 @@ public class RoomEquipmentsServiceImpl implements RoomEquipmentsService {
 
     @Override
     public Page<RoomEquipmentsResponse> getRoomEquipmentsContain(String text, Pageable pageable) {
-        return null;
+        return roomEquipmentRepository.findByEquipment_NameContainsIgnoreCase(text, pageable).map(roomEquipmentsMapper::toRoomEquipmentsResponse);
     }
 
     @Override

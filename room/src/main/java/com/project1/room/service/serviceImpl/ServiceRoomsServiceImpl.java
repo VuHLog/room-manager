@@ -32,12 +32,12 @@ public class ServiceRoomsServiceImpl implements ServiceRoomsService {
 
     @Override
     public Page<ServiceRoomsResponse> getServiceRooms(Pageable pageable) {
-        return serviceRoomsRepository.findAll(pageable).map(serviceRoomsMapper::toServiceRoomsResponse);
+        return serviceRoomsRepository.findByOrderByYearDescMonthDesc(pageable).map(serviceRoomsMapper::toServiceRoomsResponse);
     }
 
     @Override
     public Page<ServiceRoomsResponse> getServiceRoomsContain(String text, Pageable pageable) {
-        return null;
+        return serviceRoomsRepository.findByService_NameContainsIgnoreCaseOrderByYearDescMonthDesc(text, pageable).map(serviceRoomsMapper::toServiceRoomsResponse);
     }
 
     @Override

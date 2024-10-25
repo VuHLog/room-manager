@@ -25,15 +25,9 @@ public class RoomEquipmentsController {
             @RequestParam(name = "sort", required = false, defaultValue = "ASC") String sort,
             @RequestParam(name = "search", required = false, defaultValue = "") String search
     ){
-        Sort sortable = null;
-        if(sort.equalsIgnoreCase("ASC")){
-            sortable = Sort.by(field).ascending();
-        }
-        if(sort.equalsIgnoreCase("DESC")){
-            sortable = Sort.by(field).descending();
-        }
+        Sort sortable = sort.equalsIgnoreCase("ASC") ? Sort.by(field).ascending() : Sort.by(field).descending();
 
-        Pageable pageable = PageRequest.of(pageNumber,pageSize,sortable);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sortable);
         Page<RoomEquipmentsResponse> RoomEquipments = null;
         if(!search.trim().isEmpty()){
             RoomEquipments = roomEquipmentsService.getRoomEquipmentsContain(search,pageable);
