@@ -3,6 +3,12 @@ package com.project1.room.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+
 @Getter
 @Setter
 @NoArgsConstructor

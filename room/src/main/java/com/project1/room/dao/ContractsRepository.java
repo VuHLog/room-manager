@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ContractsRepository extends JpaRepository<Contracts, String> {
     Page<Contracts> findByDescriptionContainsIgnoreCase(String text, Pageable pageable);
+
+    Contracts findByStatusAndRoom_Id(String status, String roomId);
 }

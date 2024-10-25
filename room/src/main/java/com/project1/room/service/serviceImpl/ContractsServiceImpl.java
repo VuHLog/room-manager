@@ -42,6 +42,11 @@ public class ContractsServiceImpl implements ContractsService {
     }
 
     @Override
+    public ContractsResponse getByStatusAndRoomId(String status, String roomId) {
+        return contractsMapper.toContractsResponse(contractsRepository.findByStatusAndRoom_Id(status, roomId));
+    }
+
+    @Override
     public ContractsResponse addContract(ContractsRequest request) {
         Contracts contract = contractsMapper.toContract(request);
 

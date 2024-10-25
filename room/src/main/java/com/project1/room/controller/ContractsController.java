@@ -1,5 +1,6 @@
 package com.project1.room.controller;
 
+import com.project1.room.constants.ContractStatus;
 import com.project1.room.dto.request.ContractsRequest;
 import com.project1.room.dto.response.ApiResponse;
 import com.project1.room.dto.response.ContractsResponse;
@@ -45,6 +46,13 @@ public class ContractsController {
     public ApiResponse<ContractsResponse> getContractById(@PathVariable String contractId){
         return ApiResponse.<ContractsResponse>builder()
                 .result(contractsService.getById(contractId))
+                .build();
+    }
+
+    @GetMapping("/enabled")
+    public ApiResponse<ContractsResponse> getContractsEnabledByRoomId(@RequestParam(name = "roomId", required = true) String roomId){
+        return ApiResponse.<ContractsResponse>builder()
+                .result(contractsService.getByStatusAndRoomId(ContractStatus.ENABLED.getStatus(),roomId))
                 .build();
     }
 

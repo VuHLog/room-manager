@@ -12,6 +12,8 @@ public interface ContractsService {
 
     ContractsResponse getById(String id);
 
+    ContractsResponse getByStatusAndRoomId(String status, String roomId);
+
     ContractsResponse addContract(ContractsRequest request);
 
     ContractsResponse updateContract(String contractId, ContractsRequest request);
