@@ -24,8 +24,6 @@ public class ContractsRequest {
 
     private String description;
 
-    private String status;
-
     private List<TenantContract> tenantContracts;
 
     private String roomId;

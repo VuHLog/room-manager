@@ -1,5 +1,6 @@
 package com.project1.room.service.serviceImpl;
 
+import com.project1.room.constants.ContractStatus;
 import com.project1.room.constants.RoomStatus;
 import com.project1.room.dao.ContractsRepository;
 import com.project1.room.dao.RoomsRepository;
@@ -8,6 +9,8 @@ import com.project1.room.dto.request.ContractsRequest;
 import com.project1.room.dto.response.ContractsResponse;
 import com.project1.room.entity.Contracts;
 import com.project1.room.entity.Rooms;
+import com.project1.room.exception.AppException;
+import com.project1.room.exception.ErrorCode;
 import com.project1.room.mapper.ContractsMapper;
 import com.project1.room.service.ContractsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ContractsServiceImpl implements ContractsService {
@@ -63,10 +68,22 @@ public class ContractsServiceImpl implements ContractsService {
 
     @Override
     public ContractsResponse addContract(ContractsRequest request) {
+        String roomId = request.getRoomId();
+
+        // check room contract status enabled
+        Specification<Contracts> specs = Specification.where(null);
+        specs = specs.and(ContractsSpecification.equalRoomId(roomId)).and(ContractsSpecification.equalStatus(ContractStatus.ENABLED.getStatus()));
+        List<Contracts> roomContractsEnabled = contractsRepository.findAll(specs);
+        if(!roomContractsEnabled.isEmpty()){
+            throw new AppException(ErrorCode.ROOM_HAS_CONTRACT);
+        }
+
         Contracts contract = contractsMapper.toContract(request);
 
+        contract.setStatus(ContractStatus.ENABLED.getStatus());
+
         // add room to contract
-        Rooms room = roomsRepository.findById(request.getRoomId()).orElse(null);
+        Rooms room = roomsRepository.findById(roomId).orElse(null);
         if(room != null) {
             room.setStatus(RoomStatus.USED.getStatus());
         }
