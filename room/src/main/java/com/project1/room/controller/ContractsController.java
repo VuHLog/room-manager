@@ -24,22 +24,11 @@ public class ContractsController {
             @RequestParam(name = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
             @RequestParam(name = "pageSize", required = false, defaultValue = "5") Integer pageSize,
             @RequestParam(name = "sort", required = false, defaultValue = "ASC") String sort,
-            @RequestParam(name = "search", required = false, defaultValue = "") String search
+            @RequestParam(name = "search", required = false, defaultValue = "") String search,
+            @RequestParam(name = "roomId", required = false, defaultValue = "") String roomId,
+            @RequestParam(name = "status", required = false, defaultValue = "") String status
     ){
-        Sort sortable = null;
-        if(sort.toUpperCase().equals("ASC")){
-            sortable = Sort.by(field).ascending();
-        }
-        if(sort.toUpperCase().equals("DESC")){
-            sortable = Sort.by(field).descending();
-        }
-
-        Pageable pageable = PageRequest.of(pageNumber,pageSize,sortable);
-        Page<ContractsResponse> contracts = null;
-        if(!search.trim().equals("")){
-            contracts = contractsService.getContractsContain(search,pageable);
-        }else contracts = contractsService.getContracts(pageable);
-        return contracts;
+        return contractsService.getContracts(field, pageNumber, pageSize, sort, search, roomId, status);
     }
 
     @GetMapping("/{contractId}")

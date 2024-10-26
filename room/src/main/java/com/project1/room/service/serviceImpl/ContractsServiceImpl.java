@@ -3,6 +3,7 @@ package com.project1.room.service.serviceImpl;
 import com.project1.room.constants.RoomStatus;
 import com.project1.room.dao.ContractsRepository;
 import com.project1.room.dao.RoomsRepository;
+import com.project1.room.dao.specifications.ContractsSpecification;
 import com.project1.room.dto.request.ContractsRequest;
 import com.project1.room.dto.response.ContractsResponse;
 import com.project1.room.entity.Contracts;
@@ -11,28 +12,42 @@ import com.project1.room.mapper.ContractsMapper;
 import com.project1.room.service.ContractsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ContractsServiceImpl implements ContractsService {
-    @Autowired
-    private ContractsRepository contractsRepository;
+    private final ContractsRepository contractsRepository;
 
-    @Autowired
-    private RoomsRepository roomsRepository;
+    private final RoomsRepository roomsRepository;
 
-    @Autowired
-    private ContractsMapper contractsMapper;
+    private final ContractsMapper contractsMapper;
 
-    @Override
-    public Page<ContractsResponse> getContracts(Pageable pageable) {
-        return contractsRepository.findAll(pageable).map(contractsMapper::toContractsResponse);
+    public ContractsServiceImpl(ContractsRepository contractsRepository, RoomsRepository roomsRepository, ContractsMapper contractsMapper) {
+        this.contractsRepository = contractsRepository;
+        this.roomsRepository = roomsRepository;
+        this.contractsMapper = contractsMapper;
     }
 
     @Override
-    public Page<ContractsResponse> getContractsContain(String text, Pageable pageable) {
-        return contractsRepository.findByDescriptionContainsIgnoreCase(text, pageable).map(contractsMapper::toContractsResponse);
+    public Page<ContractsResponse> getContracts(String field, Integer pageNumber, Integer pageSize, String sort, String search, String roomId, String status) {
+        Specification<Contracts> specs = Specification.where(null);
+
+        if(!roomId.trim().isEmpty()){
+            specs = specs.and(ContractsSpecification.equalRoomId(roomId));
+        }
+
+        if(!status.trim().isEmpty()){
+            specs = specs.and(ContractsSpecification.equalStatus(status));
+        }
+
+        Sort sortable = sort.equalsIgnoreCase("ASC") ? Sort.by(field).ascending() : Sort.by(field).descending();
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sortable);
+        return contractsRepository.findAll(specs, pageable).map(contractsMapper::toContractsResponse);
     }
 
     @Override

@@ -6,9 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ContractsService {
-    Page<ContractsResponse> getContracts(Pageable pageable);
-
-    Page<ContractsResponse> getContractsContain(String text, Pageable pageable);
+    Page<ContractsResponse> getContracts(String field, Integer pageNumber, Integer pageSize, String sort, String search, String roomId, String status);
 
     ContractsResponse getById(String id);
 
