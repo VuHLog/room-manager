@@ -11,6 +11,10 @@ import com.project1.room.entity.Rooms;
 import com.project1.room.entity.ServiceRooms;
 import com.project1.room.mapper.InvoicesMapper;
 import com.project1.room.service.InvoicesService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -33,6 +37,15 @@ public class InvoicesServiceImpl implements InvoicesService {
         this.roomsRepository = roomsRepository;
         this.serviceRoomsRepository = serviceRoomsRepository;
         this.invoicesMapper = invoicesMapper;
+    }
+
+    @Override
+    public Page<InvoicesResponse> getInvoices(String field, Integer pageNumber, Integer pageSize, String sort, String search) {
+
+        Sort sortable = sort.equals("ASC") ? Sort.by(field).ascending() : Sort.by(field).descending();
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sortable);
+        return invoicesRepository.findByOrderByYearDescMonthDesc(pageable).map(invoicesMapper::toInvoicesResponse);
     }
 
     @Override
@@ -62,5 +75,10 @@ public class InvoicesServiceImpl implements InvoicesService {
                 .room(room)
                 .build();
         return invoicesMapper.toInvoicesResponse(invoicesRepository.save(invoices));
+    }
+
+    @Override
+    public void deleteInvoices(String invoicesId) {
+        invoicesRepository.deleteById(invoicesId);
     }
 }
