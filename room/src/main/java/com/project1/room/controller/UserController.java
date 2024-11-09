@@ -1,5 +1,6 @@
 package com.project1.room.controller;
 
+import com.project1.room.dto.request.UserChangePasswordRequest;
 import com.project1.room.dto.request.UserCreationRequest;
 import com.project1.room.dto.request.UserUpdateRequest;
 import com.project1.room.dto.response.ApiResponse;
@@ -82,6 +83,14 @@ public class UserController {
     public ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request){
         return ApiResponse.<UserResponse>builder()
                 .result(userService.updateUser(userId,request))
+                .build();
+    }
+
+    @PutMapping("/{userId}/change-password")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MANAGER') and @userServiceImpl.hasId(#userId))")
+    public ApiResponse<UserResponse> changePassword(@PathVariable String userId, @RequestBody UserChangePasswordRequest request){
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.changePassword(userId,request))
                 .build();
     }
 

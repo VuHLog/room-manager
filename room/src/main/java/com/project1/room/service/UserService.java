@@ -1,5 +1,6 @@
 package com.project1.room.service;
 
+import com.project1.room.dto.request.UserChangePasswordRequest;
 import com.project1.room.dto.request.UserCreationRequest;
 import com.project1.room.dto.request.UserUpdateRequest;
 import com.project1.room.dto.response.UserResponse;
@@ -17,6 +18,8 @@ public interface UserService {
     UserResponse addUser(UserCreationRequest request);
 
     UserResponse updateUser(String userId, UserUpdateRequest request);
+
+    UserResponse changePassword(String userId, UserChangePasswordRequest request);
 
     void deleteUser(String userId);
 

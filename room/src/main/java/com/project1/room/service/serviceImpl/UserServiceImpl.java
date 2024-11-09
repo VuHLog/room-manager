@@ -4,6 +4,7 @@ import com.project1.room.dao.RoleRepository;
 import com.project1.room.dao.UserRoleRepository;
 import com.project1.room.dao.UsersRepository;
 import com.project1.room.dao.specifications.UsersSpecification;
+import com.project1.room.dto.request.UserChangePasswordRequest;
 import com.project1.room.dto.request.UserCreationRequest;
 import com.project1.room.dto.request.UserUpdateRequest;
 import com.project1.room.dto.response.UserResponse;
@@ -91,12 +92,18 @@ public class UserServiceImpl implements UserService {
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
         Users user = usersRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         userMapper.updateUser(user, request);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         //xu ly user roles request
         user.getUserRoles().forEach(userRole -> userRole.setUser(user));
 
         return userMapper.toUserResponse(usersRepository.saveAndFlush(user));
+    }
+
+    @Override
+    public UserResponse changePassword(String userId, UserChangePasswordRequest request) {
+        Users user = usersRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        return userMapper.toUserResponse(usersRepository.save(user));
     }
 
     @Override
