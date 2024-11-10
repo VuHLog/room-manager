@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -49,6 +50,7 @@ public class TenantsController {
     }
 
     @PostMapping("")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<TenantsResponse> addTenant(@RequestBody TenantsRequest request) {
         return ApiResponse.<TenantsResponse>builder()
                 .result(tenantsService.addTenant(request))
@@ -56,6 +58,7 @@ public class TenantsController {
     }
 
     @PutMapping("/{tenantId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<TenantsResponse> updateTenant(@PathVariable String tenantId,@RequestBody TenantsRequest request) {
         return ApiResponse.<TenantsResponse>builder()
                 .result(tenantsService.updateTenant(tenantId, request))
@@ -63,6 +66,7 @@ public class TenantsController {
     }
 
     @DeleteMapping("/{tenantId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<String> deleteTenant(@PathVariable String tenantId) {
         tenantsService.deleteTenantById(tenantId);
         return ApiResponse.<String>builder()
