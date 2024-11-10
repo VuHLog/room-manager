@@ -1,15 +1,20 @@
 package com.project1.room.service.serviceImpl;
 
+import com.project1.room.constants.ContractStatus;
 import com.project1.room.constants.PaymentStatus;
 import com.project1.room.dao.InvoicesRepository;
 import com.project1.room.dao.RoomsRepository;
 import com.project1.room.dao.ServiceRoomsRepository;
 import com.project1.room.dto.request.InvoicesRequest;
+import com.project1.room.dto.request.InvoicesStatusRequest;
 import com.project1.room.dto.response.InvoicesResponse;
 import com.project1.room.entity.Invoices;
 import com.project1.room.entity.Rooms;
 import com.project1.room.entity.ServiceRooms;
+import com.project1.room.exception.AppException;
+import com.project1.room.exception.ErrorCode;
 import com.project1.room.mapper.InvoicesMapper;
+import com.project1.room.service.ContractsService;
 import com.project1.room.service.InvoicesService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,12 +35,15 @@ public class InvoicesServiceImpl implements InvoicesService {
 
     private final ServiceRoomsRepository serviceRoomsRepository;
 
+    private final ContractsService contractsService;
+
     private final InvoicesMapper invoicesMapper;
 
-    public InvoicesServiceImpl(InvoicesRepository invoicesRepository, RoomsRepository roomsRepository, ServiceRoomsRepository serviceRoomsRepository, InvoicesMapper invoicesMapper) {
+    public InvoicesServiceImpl(InvoicesRepository invoicesRepository, RoomsRepository roomsRepository, ServiceRoomsRepository serviceRoomsRepository, ContractsService contractsService, InvoicesMapper invoicesMapper) {
         this.invoicesRepository = invoicesRepository;
         this.roomsRepository = roomsRepository;
         this.serviceRoomsRepository = serviceRoomsRepository;
+        this.contractsService = contractsService;
         this.invoicesMapper = invoicesMapper;
     }
 
@@ -51,6 +59,12 @@ public class InvoicesServiceImpl implements InvoicesService {
     @Override
     public InvoicesResponse createInvoices(InvoicesRequest request) {
         String roomId = request.getRoomId();
+
+        //check room contract status
+        if(contractsService.getContractsByStatusAndRoomId(ContractStatus.ENABLED.getStatus(), roomId).size() != 1) {
+            throw new AppException(ErrorCode.ROOM_WITHOUT_CONTRACT);
+        }
+
         String paymentStatus = PaymentStatus.UNPAID.getStatus();
 
         //get month, year
@@ -66,6 +80,7 @@ public class InvoicesServiceImpl implements InvoicesService {
         }
 
         Rooms room = roomsRepository.findById(roomId).orElse(null);
+        amount += room.getPrice();
 
         Invoices invoices = Invoices.builder()
                 .amount(amount)
@@ -74,6 +89,13 @@ public class InvoicesServiceImpl implements InvoicesService {
                 .paymentStatus(paymentStatus)
                 .room(room)
                 .build();
+        return invoicesMapper.toInvoicesResponse(invoicesRepository.save(invoices));
+    }
+
+    @Override
+    public InvoicesResponse updateInvoicesStatus(String invoicesId, InvoicesStatusRequest request) {
+        Invoices invoices = invoicesRepository.findById(invoicesId).orElseThrow(null);
+        invoices.setPaymentStatus(request.getStatus());
         return invoicesMapper.toInvoicesResponse(invoicesRepository.save(invoices));
     }
 

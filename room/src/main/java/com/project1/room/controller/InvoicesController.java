@@ -1,6 +1,7 @@
 package com.project1.room.controller;
 
 import com.project1.room.dto.request.InvoicesRequest;
+import com.project1.room.dto.request.InvoicesStatusRequest;
 import com.project1.room.dto.response.ApiResponse;
 import com.project1.room.dto.response.InvoicesResponse;
 import com.project1.room.service.InvoicesService;
@@ -31,6 +32,13 @@ public class InvoicesController {
     public ApiResponse<InvoicesResponse> createInvoices(@RequestBody InvoicesRequest request){
         return ApiResponse.<InvoicesResponse>builder()
                 .result(invoicesService.createInvoices(request))
+                .build();
+    }
+
+    @PutMapping("/{invoicesId}/status")
+    public ApiResponse<InvoicesResponse> updateInvoicesStatus(@PathVariable String invoicesId, @RequestBody InvoicesStatusRequest request){
+        return ApiResponse.<InvoicesResponse>builder()
+                .result(invoicesService.updateInvoicesStatus(invoicesId, request))
                 .build();
     }
 

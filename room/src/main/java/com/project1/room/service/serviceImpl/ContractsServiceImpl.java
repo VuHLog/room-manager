@@ -70,10 +70,8 @@ public class ContractsServiceImpl implements ContractsService {
     public ContractsResponse addContract(ContractsRequest request) {
         String roomId = request.getRoomId();
 
-        // check room contract status enabled
-        Specification<Contracts> specs = Specification.where(null);
-        specs = specs.and(ContractsSpecification.equalRoomId(roomId)).and(ContractsSpecification.equalStatus(ContractStatus.ENABLED.getStatus()));
-        List<Contracts> roomContractsEnabled = contractsRepository.findAll(specs);
+        // get room contract status enabled
+        List<Contracts> roomContractsEnabled = getContractsByStatusAndRoomId(ContractStatus.ENABLED.getStatus(), roomId);
         if(!roomContractsEnabled.isEmpty()){
             throw new AppException(ErrorCode.ROOM_HAS_CONTRACT);
         }
@@ -123,5 +121,13 @@ public class ContractsServiceImpl implements ContractsService {
         contract.setRoom(room);
 
         contractsMapper.toContractsResponse(contractsRepository.save(contract));
+    }
+
+    @Override
+    public List<Contracts> getContractsByStatusAndRoomId(String status, String roomId) {
+        // check room contract status
+        Specification<Contracts> specs = Specification.where(null);
+        specs = specs.and(ContractsSpecification.equalRoomId(roomId)).and(ContractsSpecification.equalStatus(status));
+        return contractsRepository.findAll(specs);
     }
 }

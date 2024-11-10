@@ -16,6 +16,7 @@ public enum ErrorCode {
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.UNAUTHORIZED),
     BRANCH_ROOM_NUMBER_EXISTED(2000, "Branch room number already exists", HttpStatus.BAD_REQUEST),
     ROOM_HAS_CONTRACT(3000, "The room has a contract", HttpStatus.BAD_REQUEST),
+    ROOM_WITHOUT_CONTRACT(3002, "Room without contract", HttpStatus.BAD_REQUEST),
     INVALID_CONTRACT_DATE(3001, "Start date must be less than end date", HttpStatus.BAD_REQUEST),
     ;
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
