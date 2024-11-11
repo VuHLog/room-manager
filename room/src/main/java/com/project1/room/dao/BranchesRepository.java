@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BranchesRepository extends JpaRepository<Branches, String>, JpaSpecificationExecutor<Branches> {
     Page<Branches> findByNameContainsIgnoreCase(String text, Pageable pageable);
+
+    Long countById(String id);
 }

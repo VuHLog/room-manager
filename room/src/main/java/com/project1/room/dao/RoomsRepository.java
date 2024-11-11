@@ -15,4 +15,6 @@ public interface RoomsRepository extends JpaRepository<Rooms, String>, JpaSpecif
     Page<Rooms> findByBranch_Id(String branchId, Pageable pageable);
 
     boolean existsByBranch_IdAndRoomNumber(String branchId, String roomNumber);
+
+    Long countByStatus(String status);
 }
