@@ -5,10 +5,7 @@ import com.project1.room.dao.*;
 import com.project1.room.dao.specifications.RoomsSpecification;
 import com.project1.room.dto.request.RoomsRequest;
 import com.project1.room.dto.response.RoomsResponse;
-import com.project1.room.entity.Branches;
-import com.project1.room.entity.Equipments;
-import com.project1.room.entity.Rooms;
-import com.project1.room.entity.Services;
+import com.project1.room.entity.*;
 import com.project1.room.exception.AppException;
 import com.project1.room.exception.ErrorCode;
 import com.project1.room.mapper.RoomsMapper;
@@ -19,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,6 +31,9 @@ public class RoomsServiceImpl implements RoomsService {
 
     @Autowired
     private RoomsMapper roomsMapper;
+
+    @Autowired
+    private UsersRepository usersRepository;
 
     @Override
     public Page<RoomsResponse> getRooms(String field, Integer pageNumber, Integer pageSize, String sort, String searchText, String branchId, String managerId, String status, Integer capacity) {
@@ -132,5 +133,15 @@ public class RoomsServiceImpl implements RoomsService {
     @Override
     public void deleteRoomById(String roomId) {
         updateRoomStatus(roomId, RoomStatus.DISABLED.getStatus());
+    }
+
+    public boolean hasManager(String roomId) {
+        //get current user
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user = usersRepository.findByUsername(username).orElse(null);
+
+        //get branch
+        Rooms room = roomsRepository.findById(roomId).orElse(null);
+        return user != null && room != null && user.getId().equals(room.getBranch().getManager().getId());
     }
 }

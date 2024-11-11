@@ -3,17 +3,16 @@ package com.project1.room.service.serviceImpl;
 import com.project1.room.dao.EquipmentsRepository;
 import com.project1.room.dao.RoomsRepository;
 import com.project1.room.dao.RoomEquipmentRepository;
+import com.project1.room.dao.UsersRepository;
 import com.project1.room.dto.request.RoomEquipmentsRequest;
 import com.project1.room.dto.response.RoomEquipmentsResponse;
-import com.project1.room.entity.Equipments;
-import com.project1.room.entity.RoomEquipment;
-import com.project1.room.entity.Rooms;
-import com.project1.room.entity.Services;
+import com.project1.room.entity.*;
 import com.project1.room.mapper.RoomEquipmentsMapper;
 import com.project1.room.service.RoomEquipmentsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,6 +28,9 @@ public class RoomEquipmentsServiceImpl implements RoomEquipmentsService {
     
     @Autowired
     private RoomEquipmentsMapper roomEquipmentsMapper;
+
+    @Autowired
+    private UsersRepository usersRepository;
     
     @Override
     public Page<RoomEquipmentsResponse> getRoomEquipments(Pageable pageable) {
@@ -82,5 +84,28 @@ public class RoomEquipmentsServiceImpl implements RoomEquipmentsService {
     @Override
     public void deleteRoomEquipmentById(String serviceRoomId) {
         roomEquipmentRepository.deleteById(serviceRoomId);
+    }
+
+    public boolean hasManager(String roomEquipmentId) {
+
+        //get current user
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user = usersRepository.findByUsername(username).orElse(null);
+
+        //get roomEquipment
+        RoomEquipment roomEquipment = roomEquipmentRepository.findById(roomEquipmentId).orElse(null);
+        return user != null && roomEquipment != null && user.getId().equals(roomEquipment.getRoom().getBranch().getManager().getId());
+    }
+
+    public boolean isCreateForManager(String roomId) {
+
+        //get current user
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user = usersRepository.findByUsername(username).orElse(null);
+
+        //get store
+        Rooms room = roomsRepository.findById(roomId).orElse(null);
+
+        return user != null && room != null && user.getId().equals(room.getBranch().getManager().getId());
     }
 }

@@ -45,7 +45,7 @@ public class SecurityConfiguration {
                         .requestMatchers( HttpMethod.GET).permitAll()
                         .requestMatchers( HttpMethod.POST,PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.PUT).permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().hasAnyRole("ADMIN","MANAGER")
         );
 
         //Cấu hình xử lý token OAuth2

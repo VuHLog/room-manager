@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -43,6 +44,7 @@ public class RoomEquipmentsController {
     }
 
     @PostMapping("")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MANAGER') and @roomEquipmentsServiceImpl.isCreateForManager(#request.roomId))")
     public ApiResponse<RoomEquipmentsResponse> addRoomEquipment(@RequestBody RoomEquipmentsRequest request) {
         return ApiResponse.<RoomEquipmentsResponse>builder()
                 .result(roomEquipmentsService.addRoomEquipment(request))
@@ -50,6 +52,7 @@ public class RoomEquipmentsController {
     }
 
     @PutMapping("/{roomEquipmentId}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MANAGER') and @roomEquipmentsServiceImpl.hasManager(#roomEquipmentId))")
     public ApiResponse<RoomEquipmentsResponse> updateRoomEquipment(@PathVariable String roomEquipmentId,@RequestBody RoomEquipmentsRequest request) {
         return ApiResponse.<RoomEquipmentsResponse>builder()
                 .result(roomEquipmentsService.updateRoomEquipment(roomEquipmentId, request))
@@ -57,6 +60,7 @@ public class RoomEquipmentsController {
     }
 
     @DeleteMapping("/{roomEquipmentId}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MANAGER') and @roomEquipmentsServiceImpl.hasManager(#roomEquipmentId))")
     public ApiResponse<String> deleteRoomEquipment(@PathVariable String roomEquipmentId) {
         roomEquipmentsService.deleteRoomEquipmentById(roomEquipmentId);
         return ApiResponse.<String>builder()

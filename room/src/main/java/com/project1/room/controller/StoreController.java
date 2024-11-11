@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -70,6 +71,7 @@ public class StoreController {
     }
 
     @PostMapping("")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MANAGER') and @storeServiceImpl.isCreateForManager(#request.branchId))")
     public ApiResponse<StoreResponse> addStore(@RequestBody StoreRequest request) {
         return ApiResponse.<StoreResponse>builder()
                 .result(storeService.addStore(request))
@@ -77,13 +79,15 @@ public class StoreController {
     }
 
     @PutMapping("/{storeId}")
-    public ApiResponse<StoreResponse> updateTenant(@PathVariable String storeId,@RequestBody StoreRequest request) {
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MANAGER') and @storeServiceImpl.hasManager(#storeId))")
+    public ApiResponse<StoreResponse> updateTenant(@PathVariable String storeId, @RequestBody StoreRequest request) {
         return ApiResponse.<StoreResponse>builder()
                 .result(storeService.updateStore(storeId, request))
                 .build();
     }
 
     @DeleteMapping("/{storeId}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MANAGER') and @storeServiceImpl.hasManager(#storeId))")
     public ApiResponse<String> deleteTenant(@PathVariable String storeId) {
         storeService.deleteStoreById(storeId);
         return ApiResponse.<String>builder()

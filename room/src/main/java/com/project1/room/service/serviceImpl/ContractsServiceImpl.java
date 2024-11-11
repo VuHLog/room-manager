@@ -4,11 +4,14 @@ import com.project1.room.constants.ContractStatus;
 import com.project1.room.constants.RoomStatus;
 import com.project1.room.dao.ContractsRepository;
 import com.project1.room.dao.RoomsRepository;
+import com.project1.room.dao.UsersRepository;
 import com.project1.room.dao.specifications.ContractsSpecification;
 import com.project1.room.dto.request.ContractsRequest;
 import com.project1.room.dto.response.ContractsResponse;
 import com.project1.room.entity.Contracts;
 import com.project1.room.entity.Rooms;
+import com.project1.room.entity.ServiceRooms;
+import com.project1.room.entity.Users;
 import com.project1.room.exception.AppException;
 import com.project1.room.exception.ErrorCode;
 import com.project1.room.mapper.ContractsMapper;
@@ -21,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -35,10 +39,14 @@ public class ContractsServiceImpl implements ContractsService {
 
     private final ContractsMapper contractsMapper;
 
-    public ContractsServiceImpl(ContractsRepository contractsRepository, RoomsRepository roomsRepository, ContractsMapper contractsMapper) {
+    private final UsersRepository usersRepository;
+
+
+    public ContractsServiceImpl(ContractsRepository contractsRepository, RoomsRepository roomsRepository, ContractsMapper contractsMapper, UsersRepository usersRepository) {
         this.contractsRepository = contractsRepository;
         this.roomsRepository = roomsRepository;
         this.contractsMapper = contractsMapper;
+        this.usersRepository = usersRepository;
     }
 
     @Override
@@ -153,5 +161,28 @@ public class ContractsServiceImpl implements ContractsService {
         Specification<Contracts> specs = Specification.where(null);
         specs = specs.and(ContractsSpecification.equalRoomId(roomId)).and(ContractsSpecification.equalStatus(status));
         return contractsRepository.findAll(specs);
+    }
+
+    public boolean hasManager(String contractId) {
+
+        //get current user
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user = usersRepository.findByUsername(username).orElse(null);
+
+        //get store
+        Contracts contract = contractsRepository.findById(contractId).orElse(null);
+        return user != null && contract != null && user.getId().equals(contract.getRoom().getBranch().getManager().getId());
+    }
+
+    public boolean isCreateForManager(String roomId) {
+
+        //get current user
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user = usersRepository.findByUsername(username).orElse(null);
+
+        //get room
+        Rooms room = roomsRepository.findById(roomId).orElse(null);
+
+        return user != null && room != null && user.getId().equals(room.getBranch().getManager().getId());
     }
 }

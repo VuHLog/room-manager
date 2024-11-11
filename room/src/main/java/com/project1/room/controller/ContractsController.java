@@ -47,6 +47,7 @@ public class ContractsController {
     }
 
     @PostMapping("")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MANAGER') and @contractsServiceImpl.isCreateForManager(#request.roomId))")
     public ApiResponse<ContractsResponse> addContract(@RequestBody ContractsRequest request) {
         return ApiResponse.<ContractsResponse>builder()
                 .result(contractsService.addContract(request))
@@ -54,6 +55,7 @@ public class ContractsController {
     }
 
     @PutMapping("/{contractId}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MANAGER') and @contractsServiceImpl.hasManager(#contractId))")
     public ApiResponse<ContractsResponse> updateContract(@PathVariable String contractId,@RequestBody ContractsRequest request) {
         return ApiResponse.<ContractsResponse>builder()
                 .result(contractsService.updateContract(contractId, request))
@@ -70,6 +72,7 @@ public class ContractsController {
     }
 
     @DeleteMapping("/{contractId}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MANAGER') and @contractsServiceImpl.hasManager(#contractId))")
     public ApiResponse<String> deleteContract(@PathVariable String contractId) {
         contractsService.deleteContractById(contractId);
         return ApiResponse.<String>builder()

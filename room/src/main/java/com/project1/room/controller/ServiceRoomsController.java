@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -43,6 +44,7 @@ public class ServiceRoomsController {
     }
 
     @PostMapping("")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MANAGER') and @serviceRoomsServiceImpl.isCreateForManager(#request.roomId))")
     public ApiResponse<ServiceRoomsResponse> addServiceRoom(@RequestBody ServiceRoomsRequest request) {
         return ApiResponse.<ServiceRoomsResponse>builder()
                 .result(serviceRoomsService.addServiceRoom(request))
@@ -50,6 +52,7 @@ public class ServiceRoomsController {
     }
 
     @PutMapping("/{serviceRoomId}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MANAGER') and @serviceRoomsServiceImpl.hasManager(#serviceRoomId))")
     public ApiResponse<ServiceRoomsResponse> updateServiceRoom(@PathVariable String serviceRoomId,@RequestBody ServiceRoomsRequest request) {
         return ApiResponse.<ServiceRoomsResponse>builder()
                 .result(serviceRoomsService.updateServiceRoom(serviceRoomId, request))
@@ -57,6 +60,7 @@ public class ServiceRoomsController {
     }
 
     @DeleteMapping("/{serviceRoomId}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MANAGER') and @serviceRoomsServiceImpl.hasManager(#serviceRoomId))")
     public ApiResponse<String> deleteServiceRoom(@PathVariable String serviceRoomId) {
         serviceRoomsService.deleteServiceRoomsById(serviceRoomId);
         return ApiResponse.<String>builder()
