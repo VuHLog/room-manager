@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -56,6 +57,15 @@ public class ContractsController {
     public ApiResponse<ContractsResponse> updateContract(@PathVariable String contractId,@RequestBody ContractsRequest request) {
         return ApiResponse.<ContractsResponse>builder()
                 .result(contractsService.updateContract(contractId, request))
+                .build();
+    }
+
+    @PutMapping("/auto-update-status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<String> autoUpdateStatus() {
+        contractsService.autoUpdateContractStatus();
+        return ApiResponse.<String>builder()
+                .result("Update contract status successfully")
                 .build();
     }
 

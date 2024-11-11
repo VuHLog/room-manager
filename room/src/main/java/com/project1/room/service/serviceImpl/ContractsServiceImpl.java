@@ -13,16 +13,20 @@ import com.project1.room.exception.AppException;
 import com.project1.room.exception.ErrorCode;
 import com.project1.room.mapper.ContractsMapper;
 import com.project1.room.service.ContractsService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 
+@Slf4j
 @Service
 public class ContractsServiceImpl implements ContractsService {
     private final ContractsRepository contractsRepository;
@@ -121,6 +125,26 @@ public class ContractsServiceImpl implements ContractsService {
         contract.setRoom(room);
 
         contractsMapper.toContractsResponse(contractsRepository.save(contract));
+    }
+
+    @Override
+    @Scheduled(cron = "0 0 0 * * *")
+    public void autoUpdateContractStatus() {
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+
+        List<Contracts> contracts = contractsRepository.findAll();
+        contracts.forEach(contract -> {
+            if(currentTime.after(contract.getEndDate())){
+                contract.setStatus(ContractStatus.DISABLED.getStatus());
+
+                //update room status
+                roomsRepository.findById(contract.getRoom().getId()).ifPresent(room -> {
+                    room.setStatus(RoomStatus.EMPTY.getStatus());
+                    roomsRepository.save(room);
+                });
+            }
+        });
+        contractsRepository.saveAll(contracts);
     }
 
     @Override

@@ -22,4 +22,6 @@ public interface ContractsService {
     ContractsResponse updateContract(String contractId, ContractsRequest request);
 
     void deleteContractById(String contractId);
+
+    void autoUpdateContractStatus();
 }
