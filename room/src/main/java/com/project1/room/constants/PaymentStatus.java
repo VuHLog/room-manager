@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public enum PaymentStatus {
     PAID("paid"),
+    CANCELED("canceled"),
     UNPAID("unpaid");
     PaymentStatus(String status) {
         this.status = status;

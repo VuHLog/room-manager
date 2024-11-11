@@ -73,6 +73,17 @@ public class InvoicesServiceImpl implements InvoicesService {
         int month = localDate.getMonthValue();
         int year = localDate.getYear();
 
+        // check invoices status existed
+        invoicesRepository.findByRoom_IdAndYearAndMonth(roomId, year, month).ifPresent(
+                invoices -> {
+                    invoices.forEach(invoice -> {
+                        if(!invoice.getPaymentStatus().equals(PaymentStatus.CANCELED.getStatus())) {
+                            throw new AppException(ErrorCode.INVOICES_EXISTED);
+                        }
+                    });
+                }
+        );
+
         List<ServiceRooms> serviceRooms = serviceRoomsRepository.findByRoom_IdAndMonthAndYear(roomId, month, year);
         int amount = 0;
         for(ServiceRooms serviceRoom : serviceRooms) {
