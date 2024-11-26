@@ -28,7 +28,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -53,11 +57,11 @@ public class ContractsServiceImpl implements ContractsService {
     public Page<ContractsResponse> getContracts(String field, Integer pageNumber, Integer pageSize, String sort, String search, String roomId, String status) {
         Specification<Contracts> specs = Specification.where(null);
 
-        if(!roomId.trim().isEmpty()){
+        if (!roomId.trim().isEmpty()) {
             specs = specs.and(ContractsSpecification.equalRoomId(roomId));
         }
 
-        if(!status.trim().isEmpty()){
+        if (!status.trim().isEmpty()) {
             specs = specs.and(ContractsSpecification.equalStatus(status));
         }
 
@@ -84,7 +88,7 @@ public class ContractsServiceImpl implements ContractsService {
 
         // get room contract status enabled
         List<Contracts> roomContractsEnabled = getContractsByStatusAndRoomId(ContractStatus.ENABLED.getStatus(), roomId);
-        if(!roomContractsEnabled.isEmpty()){
+        if (!roomContractsEnabled.isEmpty()) {
             throw new AppException(ErrorCode.ROOM_HAS_CONTRACT);
         }
 
@@ -94,7 +98,7 @@ public class ContractsServiceImpl implements ContractsService {
 
         // add room to contract
         Rooms room = roomsRepository.findById(roomId).orElse(null);
-        if(room != null) {
+        if (room != null) {
             room.setStatus(RoomStatus.USED.getStatus());
         }
         contract.setRoom(room);
@@ -110,7 +114,7 @@ public class ContractsServiceImpl implements ContractsService {
         Contracts contract = contractsRepository.findById(roomId).orElseThrow(null);
         contractsMapper.updateContract(contract, request);
 
-        if(!contract.getRoom().getId().equals(request.getRoomId())) {
+        if (!contract.getRoom().getId().equals(request.getRoomId())) {
             Rooms room = roomsRepository.findById(request.getRoomId()).orElse(null);
             contract.setRoom(room);
         }
@@ -127,7 +131,7 @@ public class ContractsServiceImpl implements ContractsService {
         contract.setStatus("disabled");
         // add room to contract
         Rooms room = roomsRepository.findById(contract.getRoom().getId()).orElse(null);
-        if(room != null) {
+        if (room != null) {
             room.setStatus(RoomStatus.EMPTY.getStatus());
         }
         contract.setRoom(room);
@@ -142,16 +146,43 @@ public class ContractsServiceImpl implements ContractsService {
 
         List<Contracts> contracts = contractsRepository.findAll();
         contracts.forEach(contract -> {
-            if(currentTime.after(contract.getEndDate())){
+            if (currentTime.after(contract.getEndDate()) && !contract.getStatus().equals(ContractStatus.DISABLED.getStatus())) {
                 contract.setStatus(ContractStatus.DISABLED.getStatus());
-
-                //update room status
-                roomsRepository.findById(contract.getRoom().getId()).ifPresent(room -> {
-                    room.setStatus(RoomStatus.EMPTY.getStatus());
-                    roomsRepository.save(room);
-                });
             }
         });
+
+        contracts.stream()
+                .sorted(Comparator.comparing((Contracts c) -> ContractStatus.ENABLED.getStatus().equals(c.getStatus()) ? 0 : 1)) // Ưu tiên Enabled
+                .collect(Collectors.toMap(
+                        Contracts::getRoom,
+                        contract -> contract,
+                        (existing, replacement) -> existing
+                ))
+                .values()
+                .forEach(c -> {
+                    Rooms room = c.getRoom();
+                    if (c.getStatus().equals(ContractStatus.ENABLED.getStatus()) &&
+                            room.getStatus().equals(RoomStatus.EMPTY.getStatus())
+                    ) {
+                        //update room status
+                        roomsRepository.findById(room.getId()).ifPresent(r -> {
+                            r.setStatus(RoomStatus.USED.getStatus());
+                            roomsRepository.save(r);
+                        });
+                        return;
+                    }
+
+                    if (c.getStatus().equals(ContractStatus.DISABLED.getStatus()) &&
+                            room.getStatus().equals(RoomStatus.USED.getStatus())
+                    ) {
+                        //update room status
+                        roomsRepository.findById(room.getId()).ifPresent(r -> {
+                            r.setStatus(RoomStatus.EMPTY.getStatus());
+                            roomsRepository.save(r);
+                        });
+                    }
+                });
+
         contractsRepository.saveAll(contracts);
     }
 
