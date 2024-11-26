@@ -1,5 +1,6 @@
 package com.project1.room.service.serviceImpl;
 
+import com.project1.room.constants.PaymentStatus;
 import com.project1.room.dao.BranchesRepository;
 import com.project1.room.dao.InvoicesRepository;
 import com.project1.room.dao.RoomsRepository;
@@ -46,10 +47,6 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public Long revenueCalculation(Integer month, Integer year, String branchId, String roomId) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-        Root<Invoices> root = cq.from(Invoices.class);
-
         //filter where
         Specification<Invoices> specs = Specification.where(null);
         if(month != null){
@@ -63,6 +60,12 @@ public class ReportServiceImpl implements ReportService {
         }else if(!roomId.trim().isEmpty()){
             specs = specs.and(ReportSpecification.hasRoom(roomId));
         }
+        specs = specs.and(ReportSpecification.hasPaymentStatus(PaymentStatus.PAID.getStatus()));
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<Invoices> root = cq.from(Invoices.class);
+
         Predicate predicate = specs.toPredicate(root, cq, cb);
         if (predicate != null) {
             cq.where(predicate);

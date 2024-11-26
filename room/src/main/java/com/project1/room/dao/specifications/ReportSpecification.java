@@ -30,4 +30,8 @@ public class ReportSpecification {
             return criteriaBuilder.equal(roomJoin.get("id"), roomId);
         };
     }
+
+    public static Specification<Invoices> hasPaymentStatus(String status) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("paymentStatus"), status);
+    }
 }
