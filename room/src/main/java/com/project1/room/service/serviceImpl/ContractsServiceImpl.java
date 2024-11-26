@@ -169,7 +169,7 @@ public class ContractsServiceImpl implements ContractsService {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getName();
         Users user = usersRepository.findByUsername(username).orElse(null);
 
-        //get store
+        //get contract
         Contracts contract = contractsRepository.findById(contractId).orElse(null);
         return user != null && contract != null && user.getId().equals(contract.getRoom().getBranch().getManager().getId());
     }

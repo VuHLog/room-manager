@@ -6,6 +6,7 @@ import com.project1.room.dto.response.ApiResponse;
 import com.project1.room.dto.response.InvoicesResponse;
 import com.project1.room.service.InvoicesService;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,6 +30,7 @@ public class InvoicesController {
     }
 
     @PostMapping("")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MANAGER') and @invoicesServiceImpl.isCreateForManager(#request.roomId))")
     public ApiResponse<InvoicesResponse> createInvoices(@RequestBody InvoicesRequest request){
         return ApiResponse.<InvoicesResponse>builder()
                 .result(invoicesService.createInvoices(request))
@@ -36,6 +38,7 @@ public class InvoicesController {
     }
 
     @PutMapping("/{invoicesId}/status")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MANAGER') and @invoicesServiceImpl.hasManager(#invoicesId))")
     public ApiResponse<InvoicesResponse> updateInvoicesStatus(@PathVariable String invoicesId, @RequestBody InvoicesStatusRequest request){
         return ApiResponse.<InvoicesResponse>builder()
                 .result(invoicesService.updateInvoicesStatus(invoicesId, request))
@@ -43,6 +46,7 @@ public class InvoicesController {
     }
 
     @DeleteMapping("/{invoicesId}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MANAGER') and @invoicesServiceImpl.hasManager(#invoicesId))")
     public ApiResponse<String> deleteInvoicesId(@PathVariable String invoicesId){
         invoicesService.deleteInvoices(invoicesId);
         return ApiResponse.<String>builder()
