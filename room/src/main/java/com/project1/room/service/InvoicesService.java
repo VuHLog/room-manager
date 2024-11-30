@@ -6,7 +6,7 @@ import com.project1.room.dto.response.InvoicesResponse;
 import org.springframework.data.domain.Page;
 
 public interface InvoicesService {
-    Page<InvoicesResponse> getInvoices(String field, Integer pageNumber, Integer pageSize, String sort, String search);
+    Page<InvoicesResponse> getInvoices(String field, Integer pageNumber, Integer pageSize, String sort, String search, String managerId);
 
     InvoicesResponse createInvoices(InvoicesRequest request);
 

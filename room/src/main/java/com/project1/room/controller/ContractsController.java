@@ -27,9 +27,10 @@ public class ContractsController {
             @RequestParam(name = "sort", required = false, defaultValue = "ASC") String sort,
             @RequestParam(name = "search", required = false, defaultValue = "") String search,
             @RequestParam(name = "roomId", required = false, defaultValue = "") String roomId,
-            @RequestParam(name = "status", required = false, defaultValue = "") String status
+            @RequestParam(name = "status", required = false, defaultValue = "") String status,
+            @RequestParam(name = "managerId", required = false, defaultValue = "") String managerId
     ){
-        return contractsService.getContracts(field, pageNumber, pageSize, sort, search, roomId, status);
+        return contractsService.getContracts(field, pageNumber, pageSize, sort, search, roomId, status, managerId);
     }
 
     @GetMapping("/{contractId}")

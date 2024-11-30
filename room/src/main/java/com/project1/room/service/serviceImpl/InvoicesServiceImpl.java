@@ -3,6 +3,7 @@ package com.project1.room.service.serviceImpl;
 import com.project1.room.constants.ContractStatus;
 import com.project1.room.constants.PaymentStatus;
 import com.project1.room.dao.*;
+import com.project1.room.dao.specifications.InvoicesSpecification;
 import com.project1.room.dto.request.InvoicesRequest;
 import com.project1.room.dto.request.InvoicesStatusRequest;
 import com.project1.room.dto.response.InvoicesResponse;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -51,12 +53,17 @@ public class InvoicesServiceImpl implements InvoicesService {
     }
 
     @Override
-    public Page<InvoicesResponse> getInvoices(String field, Integer pageNumber, Integer pageSize, String sort, String search) {
+    public Page<InvoicesResponse> getInvoices(String field, Integer pageNumber, Integer pageSize, String sort, String search, String managerId) {
+        Specification<Invoices> specs = Specification.where(null);
 
-        Sort sortable = sort.equals("ASC") ? Sort.by(field).ascending() : Sort.by(field).descending();
+        if(!managerId.trim().isEmpty()){
+            specs = specs.and(InvoicesSpecification.equalManagement(managerId));
+        }
 
+        Sort sortable = Sort.by("year").descending().and(Sort.by("month").descending());
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sortable);
-        return invoicesRepository.findByOrderByYearDescMonthDesc(pageable).map(invoicesMapper::toInvoicesResponse);
+
+        return invoicesRepository.findAll(specs, pageable).map(invoicesMapper::toInvoicesResponse);
     }
 
     @Override

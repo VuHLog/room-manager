@@ -54,7 +54,7 @@ public class ContractsServiceImpl implements ContractsService {
     }
 
     @Override
-    public Page<ContractsResponse> getContracts(String field, Integer pageNumber, Integer pageSize, String sort, String search, String roomId, String status) {
+    public Page<ContractsResponse> getContracts(String field, Integer pageNumber, Integer pageSize, String sort, String search, String roomId, String status, String managerId) {
         Specification<Contracts> specs = Specification.where(null);
 
         if (!roomId.trim().isEmpty()) {
@@ -63,6 +63,10 @@ public class ContractsServiceImpl implements ContractsService {
 
         if (!status.trim().isEmpty()) {
             specs = specs.and(ContractsSpecification.equalStatus(status));
+        }
+
+        if (!managerId.trim().isEmpty()) {
+            specs = specs.and(ContractsSpecification.equalManagement(managerId));
         }
 
         Sort sortable = sort.equalsIgnoreCase("ASC") ? Sort.by(field).ascending() : Sort.by(field).descending();
@@ -151,12 +155,14 @@ public class ContractsServiceImpl implements ContractsService {
             }
         });
 
+        // update room status when contracts updated status
         contracts.stream()
-                .sorted(Comparator.comparing((Contracts c) -> ContractStatus.ENABLED.getStatus().equals(c.getStatus()) ? 0 : 1)) // Ưu tiên Enabled
+                .sorted(Comparator.comparing((Contracts c) -> ContractStatus.ENABLED.getStatus().equals(c.getStatus()) ? 0 : 1)) // Ưu tiên lấy Enabled
+                //tạo map lưu các room, tránh trùng lặp, để kiểm tra việc update status room
                 .collect(Collectors.toMap(
-                        Contracts::getRoom,
-                        contract -> contract,
-                        (existing, replacement) -> existing
+                        Contracts::getRoom, //key
+                        contract -> contract, //value
+                        (existing, replacement) -> existing //nếu trùng giữ value cũ bỏ value mới
                 ))
                 .values()
                 .forEach(c -> {

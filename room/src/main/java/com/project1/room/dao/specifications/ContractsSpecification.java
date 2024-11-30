@@ -18,4 +18,12 @@ public class ContractsSpecification {
             return criteriaBuilder.equal(roomJoin.get("id"), roomId);
         };
     }
+
+    public static Specification<Contracts> equalManagement(String managerId) {
+        return (root, query, criteriaBuilder) -> {
+            Join<Object, Object> roomJoin = root.join("room", JoinType.INNER);
+            Join<Object, Object> branchJoin = roomJoin.join("branch", JoinType.INNER);
+            return criteriaBuilder.equal(branchJoin.get("manager").get("id"), managerId);
+        };
+    }
 }

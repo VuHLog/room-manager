@@ -14,7 +14,5 @@ import java.util.Optional;
 
 @Repository
 public interface InvoicesRepository extends JpaRepository<Invoices, String>, JpaSpecificationExecutor<Invoices> {
-    Page<Invoices> findByOrderByYearDescMonthDesc(Pageable pageable);
-
     Optional<List<Invoices>> findByRoom_IdAndYearAndMonth(String roomId, int year, int month);
 }
