@@ -4,6 +4,7 @@ import com.project1.room.constants.ContractStatus;
 import com.project1.room.constants.PaymentStatus;
 import com.project1.room.dao.*;
 import com.project1.room.dao.specifications.InvoicesSpecification;
+import com.project1.room.dao.specifications.RoomsSpecification;
 import com.project1.room.dto.request.InvoicesRequest;
 import com.project1.room.dto.request.InvoicesStatusRequest;
 import com.project1.room.dto.response.InvoicesResponse;
@@ -53,11 +54,23 @@ public class InvoicesServiceImpl implements InvoicesService {
     }
 
     @Override
-    public Page<InvoicesResponse> getInvoices(String field, Integer pageNumber, Integer pageSize, String sort, String search, String managerId) {
+    public Page<InvoicesResponse> getInvoices(String field, Integer pageNumber, Integer pageSize, String sort, String search, String managerId,  String roomId, String branchId, String status) {
         Specification<Invoices> specs = Specification.where(null);
 
         if(!managerId.trim().isEmpty()){
             specs = specs.and(InvoicesSpecification.equalManagement(managerId));
+        }
+
+        if (!branchId.trim().isEmpty()) {
+            specs = specs.and(InvoicesSpecification.equalBranchId(branchId));
+        }
+
+        if (!roomId.trim().isEmpty()) {
+            specs = specs.and(InvoicesSpecification.equalRoomId(roomId));
+        }
+
+        if (!status.trim().isEmpty()) {
+            specs = specs.and(InvoicesSpecification.equalStatus(status));
         }
 
         Sort sortable = Sort.by("year").descending().and(Sort.by("month").descending());
@@ -128,7 +141,7 @@ public class InvoicesServiceImpl implements InvoicesService {
             // check invoices status existed
             invoicesRepository.findByRoom_IdAndYearAndMonth(invoice.getRoom().getId(), year, month).ifPresent(
                     invoices -> invoices.forEach(i -> {
-                        if(!i.getPaymentStatus().equals(PaymentStatus.CANCELED.getStatus())) {
+                        if(!i.getPaymentStatus().equals(PaymentStatus.CANCELED.getStatus()) && !i.getId().equals(invoicesId)) {
                             throw new AppException(ErrorCode.INVOICES_EXISTED);
                         }
                     })

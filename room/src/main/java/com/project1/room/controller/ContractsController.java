@@ -21,16 +21,17 @@ public class ContractsController {
 
     @GetMapping("")
     public Page<ContractsResponse> getContracts(
-            @RequestParam(name = "field", required = false, defaultValue = "id") String field,
+            @RequestParam(name = "field", required = false, defaultValue = "startDate") String field,
             @RequestParam(name = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
             @RequestParam(name = "pageSize", required = false, defaultValue = "5") Integer pageSize,
             @RequestParam(name = "sort", required = false, defaultValue = "ASC") String sort,
             @RequestParam(name = "search", required = false, defaultValue = "") String search,
             @RequestParam(name = "roomId", required = false, defaultValue = "") String roomId,
             @RequestParam(name = "status", required = false, defaultValue = "") String status,
-            @RequestParam(name = "managerId", required = false, defaultValue = "") String managerId
+            @RequestParam(name = "managerId", required = false, defaultValue = "") String managerId,
+            @RequestParam(name = "branchId", required = false, defaultValue = "") String branchId
     ){
-        return contractsService.getContracts(field, pageNumber, pageSize, sort, search, roomId, status, managerId);
+        return contractsService.getContracts(field, pageNumber, pageSize, sort, search, roomId, status, managerId, branchId);
     }
 
     @GetMapping("/{contractId}")

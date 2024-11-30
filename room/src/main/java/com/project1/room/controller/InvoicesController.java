@@ -25,9 +25,12 @@ public class InvoicesController {
             @RequestParam(name = "pageSize", required = false, defaultValue = "5") Integer pageSize,
             @RequestParam(name = "sort", required = false, defaultValue = "ASC") String sort,
             @RequestParam(name = "search", required = false, defaultValue = "") String search,
-            @RequestParam(name = "managerId", required = false, defaultValue = "") String managerId
+            @RequestParam(name = "managerId", required = false, defaultValue = "") String managerId,
+            @RequestParam(name = "roomId", required = false, defaultValue = "") String roomId,
+            @RequestParam(name = "status", required = false, defaultValue = "") String status,
+            @RequestParam(name = "branchId", required = false, defaultValue = "") String branchId
     ){
-        return invoicesService.getInvoices(field, pageNumber, pageSize, sort, search, managerId);
+        return invoicesService.getInvoices(field, pageNumber, pageSize, sort, search, managerId, roomId, branchId, status);
     }
 
     @PostMapping("")

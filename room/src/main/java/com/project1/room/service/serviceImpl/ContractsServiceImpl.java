@@ -54,7 +54,7 @@ public class ContractsServiceImpl implements ContractsService {
     }
 
     @Override
-    public Page<ContractsResponse> getContracts(String field, Integer pageNumber, Integer pageSize, String sort, String search, String roomId, String status, String managerId) {
+    public Page<ContractsResponse> getContracts(String field, Integer pageNumber, Integer pageSize, String sort, String search, String roomId, String status, String managerId, String branchId) {
         Specification<Contracts> specs = Specification.where(null);
 
         if (!roomId.trim().isEmpty()) {
@@ -67,6 +67,10 @@ public class ContractsServiceImpl implements ContractsService {
 
         if (!managerId.trim().isEmpty()) {
             specs = specs.and(ContractsSpecification.equalManagement(managerId));
+        }
+
+        if (!branchId.trim().isEmpty()) {
+            specs = specs.and(ContractsSpecification.equalBranchId(branchId));
         }
 
         Sort sortable = sort.equalsIgnoreCase("ASC") ? Sort.by(field).ascending() : Sort.by(field).descending();

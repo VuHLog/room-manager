@@ -1,6 +1,7 @@
 package com.project1.room.dao.specifications;
 
 import com.project1.room.entity.Contracts;
+import com.project1.room.entity.Invoices;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
@@ -24,6 +25,13 @@ public class ContractsSpecification {
             Join<Object, Object> roomJoin = root.join("room", JoinType.INNER);
             Join<Object, Object> branchJoin = roomJoin.join("branch", JoinType.INNER);
             return criteriaBuilder.equal(branchJoin.get("manager").get("id"), managerId);
+        };
+    }
+
+    public static Specification<Contracts> equalBranchId(String branchId) {
+        return (root, query, criteriaBuilder) -> {
+            Join<Object, Object> roomJoin = root.join("room", JoinType.INNER);
+            return criteriaBuilder.like(roomJoin.get("branch").get("id"), branchId);
         };
     }
 }
