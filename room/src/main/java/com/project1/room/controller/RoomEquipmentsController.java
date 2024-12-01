@@ -24,16 +24,10 @@ public class RoomEquipmentsController {
             @RequestParam(name = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
             @RequestParam(name = "pageSize", required = false, defaultValue = "5") Integer pageSize,
             @RequestParam(name = "sort", required = false, defaultValue = "ASC") String sort,
-            @RequestParam(name = "search", required = false, defaultValue = "") String search
+            @RequestParam(name = "search", required = false, defaultValue = "") String search,
+            @RequestParam(name = "roomId", required = false, defaultValue = "") String roomId
     ){
-        Sort sortable = sort.equalsIgnoreCase("ASC") ? Sort.by(field).ascending() : Sort.by(field).descending();
-
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, sortable);
-        Page<RoomEquipmentsResponse> RoomEquipments = null;
-        if(!search.trim().isEmpty()){
-            RoomEquipments = roomEquipmentsService.getRoomEquipmentsContain(search,pageable);
-        }else RoomEquipments = roomEquipmentsService.getRoomEquipments(pageable);
-        return RoomEquipments;
+        return roomEquipmentsService.getRoomEquipments(field, pageNumber, pageSize, sort, search, roomId);
     }
 
     @GetMapping("/{roomEquipmentId}")

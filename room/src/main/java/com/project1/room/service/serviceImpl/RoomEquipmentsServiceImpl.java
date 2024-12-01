@@ -4,6 +4,7 @@ import com.project1.room.dao.EquipmentsRepository;
 import com.project1.room.dao.RoomsRepository;
 import com.project1.room.dao.RoomEquipmentRepository;
 import com.project1.room.dao.UsersRepository;
+import com.project1.room.dao.specifications.RoomEquipmentSpecification;
 import com.project1.room.dto.request.RoomEquipmentsRequest;
 import com.project1.room.dto.response.RoomEquipmentsResponse;
 import com.project1.room.entity.*;
@@ -11,7 +12,10 @@ import com.project1.room.mapper.RoomEquipmentsMapper;
 import com.project1.room.service.RoomEquipmentsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +37,20 @@ public class RoomEquipmentsServiceImpl implements RoomEquipmentsService {
     private UsersRepository usersRepository;
     
     @Override
-    public Page<RoomEquipmentsResponse> getRoomEquipments(Pageable pageable) {
-        return roomEquipmentRepository.findAll(pageable).map(roomEquipmentsMapper::toRoomEquipmentsResponse);
+    public Page<RoomEquipmentsResponse> getRoomEquipments(String field, Integer pageNumber, Integer pageSize, String sort, String search, String roomId) {
+        Specification<RoomEquipment> specs = Specification.where(null);
+
+        if(!roomId.trim().isEmpty()){
+            specs = specs.and(RoomEquipmentSpecification.equalRoomId(roomId));
+        }
+
+        if(!search.trim().isEmpty()){
+            specs = specs.and(RoomEquipmentSpecification.likeEquipmentName(search));
+        }
+
+        Sort sortable = sort.equals("ASC")? Sort.by(field).ascending(): Sort.by(field).descending();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sortable);
+        return roomEquipmentRepository.findAll(specs, pageable).map(roomEquipmentsMapper::toRoomEquipmentsResponse);
     }
 
     @Override

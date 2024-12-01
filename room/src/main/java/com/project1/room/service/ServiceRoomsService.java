@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ServiceRoomsService {
-    Page<ServiceRoomsResponse> getServiceRooms(Pageable pageable);
+    Page<ServiceRoomsResponse> getServiceRooms(String field, Integer pageNumber, Integer pageSize, String sort, String search, String roomId);
 
     Page<ServiceRoomsResponse> getServiceRoomsContain(String text, Pageable pageable);
 

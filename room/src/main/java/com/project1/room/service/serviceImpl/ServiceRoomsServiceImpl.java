@@ -4,6 +4,7 @@ import com.project1.room.dao.RoomsRepository;
 import com.project1.room.dao.ServiceRoomsRepository;
 import com.project1.room.dao.ServicesRepository;
 import com.project1.room.dao.UsersRepository;
+import com.project1.room.dao.specifications.ServiceRoomSpecification;
 import com.project1.room.dto.request.ServiceRoomsRequest;
 import com.project1.room.dto.response.ServiceRoomsResponse;
 import com.project1.room.entity.*;
@@ -11,7 +12,10 @@ import com.project1.room.mapper.ServiceRoomsMapper;
 import com.project1.room.service.ServiceRoomsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +37,20 @@ public class ServiceRoomsServiceImpl implements ServiceRoomsService {
     private UsersRepository usersRepository;
 
     @Override
-    public Page<ServiceRoomsResponse> getServiceRooms(Pageable pageable) {
-        return serviceRoomsRepository.findByOrderByYearDescMonthDesc(pageable).map(serviceRoomsMapper::toServiceRoomsResponse);
+    public Page<ServiceRoomsResponse> getServiceRooms(String field, Integer pageNumber, Integer pageSize, String sort, String search, String roomId) {
+        Specification<ServiceRooms> specs = Specification.where(null);
+
+        if(!roomId.trim().isEmpty()){
+            specs = specs.and(ServiceRoomSpecification.equalRoomId(roomId));
+        }
+
+        if(!search.trim().isEmpty()){
+            specs = specs.and(ServiceRoomSpecification.likeServiceName(search));
+        }
+
+        Sort sortable = sort.equals("ASC")? Sort.by(field).ascending(): Sort.by(field).descending();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sortable);
+        return serviceRoomsRepository.findAll(specs, pageable).map(serviceRoomsMapper::toServiceRoomsResponse);
     }
 
     @Override
